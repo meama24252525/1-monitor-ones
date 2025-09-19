@@ -17,7 +17,7 @@
   video {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* maintains aspect ratio */
+    object-fit: contain;
     background: #000;
   }
 </style>
@@ -26,7 +26,7 @@ window.addEventListener("load", () => {
   const video = document.querySelector("video");
 
   function goFullscreen() {
-    const el = document.documentElement; // fullscreen the whole page
+    const el = document.documentElement;
     if (el.requestFullscreen) {
       el.requestFullscreen().catch(() => {});
     } else if (el.webkitRequestFullscreen) {
@@ -36,10 +36,10 @@ window.addEventListener("load", () => {
     }
   }
 
-  // Attempt fullscreen shortly after load
+  // Try fullscreen on load
   setTimeout(goFullscreen, 500);
 
-  // Backup: user interaction triggers fullscreen
+  // Backup: user click/tap
   document.addEventListener("click", goFullscreen);
   document.addEventListener("touchstart", goFullscreen);
 
@@ -52,7 +52,7 @@ window.addEventListener("load", () => {
 </head>
 <body>
 <video autoplay muted>
-  <source src="East Point.mp4" type="video/mp4">
+  <source src="https://raw.githubusercontent.com/meama24252525/REPO/main/East%20Point.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 </body>
