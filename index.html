@@ -33,7 +33,10 @@ window.addEventListener("load", () => {
     else if (el.msRequestFullscreen) el.msRequestFullscreen();
   }
 
-  setTimeout(goFullscreen, 500); // try fullscreen after load
+  // Try fullscreen shortly after load
+  setTimeout(goFullscreen, 500);
+
+  // Backup: user interaction triggers fullscreen
   document.addEventListener("click", goFullscreen);
   document.addEventListener("touchstart", goFullscreen);
 
