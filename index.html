@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fullscreen Looping Video</title>
+<title>Fullscreen Video Refresh</title>
 <style>
   html, body {
     margin: 0;
@@ -25,22 +25,15 @@
 window.addEventListener("load", () => {
   const video = document.querySelector("video");
 
-  // Function to make the page fullscreen
+  // Function to fullscreen the page
   function goFullscreen() {
     const el = document.documentElement;
-    if (el.requestFullscreen) {
-      el.requestFullscreen().catch(() => {});
-    } else if (el.webkitRequestFullscreen) {
-      el.webkitRequestFullscreen();
-    } else if (el.msRequestFullscreen) {
-      el.msRequestFullscreen();
-    }
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
   }
 
-  // Attempt fullscreen shortly after load
-  setTimeout(goFullscreen, 500);
-
-  // Backup: user interaction triggers fullscreen
+  setTimeout(goFullscreen, 500); // try fullscreen after load
   document.addEventListener("click", goFullscreen);
   document.addEventListener("touchstart", goFullscreen);
 
@@ -52,10 +45,9 @@ window.addEventListener("load", () => {
 </script>
 </head>
 <body>
-<video autoplay muted loop>
-  <source src="https://raw.githubusercontent.com/meama24252525/1-monitor-ones/main/new%20Lakes%20.mp4" type="video/mp4">
+<video autoplay muted>
+  <source src="https://raw.githubusercontent.com/meama24252525/1-monitor-ones/main/East%20Point.mp4?ts=1" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 </body>
 </html>
-
