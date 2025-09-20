@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fullscreen Vertical Video Loop</title>
+<title>Fullscreen Video Loop</title>
 <style>
   html, body {
     margin: 0;
@@ -15,9 +15,14 @@
     align-items: center;
     overflow: hidden;
   }
+
   video {
-    height: 100%;      /* Fit the full height */
-    width: auto;       /* Adjust width to keep aspect ratio */
+    max-width: none;
+    max-height: none;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: center center; /* Center the video */
     background: #000;
   }
 </style>
@@ -25,7 +30,6 @@
 window.addEventListener("load", () => {
   const video = document.querySelector("video");
 
-  // Fullscreen function
   function goFullscreen() {
     const el = document.documentElement;
     if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
@@ -33,27 +37,23 @@ window.addEventListener("load", () => {
     else if (el.msRequestFullscreen) el.msRequestFullscreen();
   }
 
-  // Go fullscreen after short delay
   setTimeout(goFullscreen, 500);
   document.addEventListener("click", goFullscreen);
   document.addEventListener("touchstart", goFullscreen);
 
-  // Loop video quickly without page reload
   video.addEventListener("ended", () => {
-    video.currentTime = 0; // restart immediately
+    video.currentTime = 0;
     video.play();
   });
 
-  // Ensure video plays (handles autoplay restrictions)
   video.play().catch(() => console.log("Autoplay blocked, click to start"));
 });
 </script>
 </head>
 <body>
 <video autoplay muted playsinline>
-  <source src="https://meama24252525.github.io/1-monitor-ones/vertical%20monitors/monitor%202/menu2.mp4" type="video/mp4">
+  <source src="https://meama24252525.github.io/1-monitor-ones/monitor%202/menu2.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 </body>
 </html>
-
