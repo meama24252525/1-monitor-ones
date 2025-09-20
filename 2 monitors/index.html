@@ -34,24 +34,24 @@ window.addEventListener("load", () => {
           <source src="${video}" type="video/mp4">
         </video>
         <script>
-          const videoEl = document.querySelector("video");
+          window.onload = function() {
+            const videoEl = document.querySelector("video");
 
-          // Go fullscreen
-          function goFullscreen() {
-            const el = document.documentElement;
-            if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
-            else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-            else if(el.msRequestFullscreen) el.msRequestFullscreen();
-          }
+            // Go fullscreen
+            function goFullscreen() {
+              const el = document.documentElement;
+              if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+              else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+              else if(el.msRequestFullscreen) el.msRequestFullscreen();
+            }
 
-          setTimeout(goFullscreen, 500);
-          document.addEventListener("click", () => { goFullscreen(); videoEl.play(); });
-          document.addEventListener("touchstart", () => { goFullscreen(); videoEl.play(); });
+            setTimeout(goFullscreen, 500);
+            document.addEventListener("click", () => { goFullscreen(); videoEl.play(); });
+            document.addEventListener("touchstart", () => { goFullscreen(); videoEl.play(); });
 
-          // Refresh tab exactly when video ends
-          videoEl.addEventListener("ended", () => {
-            location.reload();
-          });
+            // Refresh tab exactly when video ends
+            videoEl.addEventListener("ended", () => location.reload());
+          };
         <\/script>
       </body>
       </html>
