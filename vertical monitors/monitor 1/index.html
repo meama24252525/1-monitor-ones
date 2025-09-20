@@ -17,12 +17,10 @@
   }
 
   video {
-    max-width: none;
-    max-height: none;
-    min-width: 100%;
-    min-height: 100%;
-    object-fit: cover;
-    object-position: center center; /* Center the video */
+    width: 1080px;   /* target width */
+    height: 1920px;  /* target height */
+    object-fit: cover;       /* cover full area */
+    object-position: center; /* center video */
     background: #000;
   }
 </style>
@@ -57,4 +55,3 @@ window.addEventListener("load", () => {
 </video>
 </body>
 </html>
-
