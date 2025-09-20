@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fullscreen Looping Video with Refresh</title>
+<title>Fullscreen Video Loop with Refresh</title>
 <style>
   html, body {
     margin: 0;
@@ -33,6 +33,7 @@ window.addEventListener("load", () => {
     else if (el.msRequestFullscreen) el.msRequestFullscreen();
   }
 
+  // Go fullscreen after a short delay
   setTimeout(goFullscreen, 500);
   document.addEventListener("click", goFullscreen);
   document.addEventListener("touchstart", goFullscreen);
@@ -41,12 +42,16 @@ window.addEventListener("load", () => {
   video.addEventListener("ended", () => {
     location.reload();
   });
+
+  // Ensure video plays (handles autoplay restrictions)
+  video.play().catch(() => console.log("Autoplay blocked, click to start"));
 });
 </script>
 </head>
 <body>
 <video autoplay muted playsinline>
-  <source src="https://raw.githubusercontent.com/meama24252525/1-monitor-ones/main/1%20monitors/menu.mp4" type="video/mp4">
+  <!-- Use GitHub Pages URL or local file -->
+  <source src="https://meama24252525.github.io/1-monitor-ones/1%20monitors/menu.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 </body>
