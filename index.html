@@ -88,6 +88,7 @@
         .menu-card:hover { transform: translateY(-4px); }
         .menu-card.monitors-1 { background: linear-gradient(135deg, #4a90e2, #357abd); }
         .menu-card.monitors-2 { background: linear-gradient(135deg, #7b68ee, #6a4fd8); }
+        .menu-card.monitors-vertical { background: linear-gradient(135deg, #ff9500, #ff7b00); }
         .menu-card.selected { ring: 3px solid #007bff; transform: scale(1.05); }
         
         .video-thumbnail {
@@ -96,6 +97,18 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             position: relative;
             overflow: hidden;
+        }
+        
+        /* Vertical monitor thumbnails - portrait orientation */
+        .menu-card.monitors-vertical .video-thumbnail {
+            height: 110px;
+            width: 65%;
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+        
+        .menu-card.monitors-vertical {
+            min-height: 170px;
         }
         
         .video-thumbnail video {
@@ -583,6 +596,7 @@
                         <p>Looking for .mp4 files in folders:</p>
                         <p>📂 "1 monitors"</p>
                         <p>📂 "2 monitors/menu1" and "2 monitors/menu2"</p>
+                        <p>📂 "vertical monitors/monitor 1" and "vertical monitors/monitor 2"</p>
                         <p>Repository: ${repoName}</p>
                     </div>
                 `;
