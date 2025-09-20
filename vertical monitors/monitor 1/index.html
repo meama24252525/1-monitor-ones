@@ -17,10 +17,14 @@
   }
 
   video {
-    width: 1080px;   /* target width */
-    height: 1920px;  /* target height */
-    object-fit: cover;       /* cover full area */
-    object-position: center; /* center video */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* center the video */
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;       /* cover entire screen */
+    object-position: center; /* center content */
     background: #000;
   }
 </style>
@@ -50,7 +54,7 @@ window.addEventListener("load", () => {
 </head>
 <body>
 <video autoplay muted playsinline>
-  <source src="https://meama24252525.github.io/1-monitor-ones/vertical%20monitors/monitor%201/menu1.mp4" type="video/mp4">
+  <source src="https://meama24252525.github.io/1-monitor-ones/vertical%20monitors/monitor%202/menu2.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 </body>
