@@ -5,13 +5,19 @@
 <title>Launch Videos on Two Tabs with Refresh</title>
 <script>
 window.addEventListener("load", () => {
+  // Replace these URLs with GitHub Pages links or local relative paths
   const videos = [
-    "https://raw.githubusercontent.com/meama24252525/1-monitor-ones/main/2%20monitors/menu1.mp4",
-    "https://raw.githubusercontent.com/meama24252525/1-monitor-ones/main/2%20monitors/menu2.mp4"
+    "https://meama24252525.github.io/1-monitor-ones/2%20monitors/menu1.mp4",
+    "https://meama24252525.github.io/1-monitor-ones/2%20monitors/menu2.mp4"
+    // OR local files: "menu1.mp4", "menu2.mp4"
   ];
 
   videos.forEach((video, i) => {
     const newWindow = window.open("", "_blank");
+    if (!newWindow) {
+      alert("Popup blocked! Allow popups to open the video tabs.");
+      return;
+    }
     newWindow.document.write(`
       <!DOCTYPE html>
       <html lang="en">
@@ -37,9 +43,10 @@ window.addEventListener("load", () => {
             else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
             else if(el.msRequestFullscreen) el.msRequestFullscreen();
           }
+
           setTimeout(goFullscreen, 500);
-          document.addEventListener("click", goFullscreen);
-          document.addEventListener("touchstart", goFullscreen);
+          document.addEventListener("click", () => { goFullscreen(); videoEl.play(); });
+          document.addEventListener("touchstart", () => { goFullscreen(); videoEl.play(); });
 
           // Refresh tab when video ends
           videoEl.addEventListener("ended", () => location.reload());
