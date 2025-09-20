@@ -17,10 +17,14 @@
   }
 
   video {
-    width: 1080px;   /* target width */
-    height: 1920px;  /* target height */
-    object-fit: cover;       /* cover full area */
-    object-position: center; /* center video */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* center the video */
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;       /* cover entire screen */
+    object-position: center; /* center content */
     background: #000;
   }
 </style>
