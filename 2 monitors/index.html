@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Launch Videos on Two Tabs with Refresh</title>
+<title>Launch Videos on Two Tabs Seamless Loop</title>
 <script>
 window.addEventListener("load", () => {
   // Replace with GitHub Pages URLs or local paths
@@ -34,24 +34,28 @@ window.addEventListener("load", () => {
           <source src="${video}" type="video/mp4">
         </video>
         <script>
-          window.onload = function() {
-            const videoEl = document.querySelector("video");
+          const videoEl = document.querySelector("video");
 
-            // Go fullscreen
-            function goFullscreen() {
-              const el = document.documentElement;
-              if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
-              else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-              else if(el.msRequestFullscreen) el.msRequestFullscreen();
-            }
+          // Go fullscreen
+          function goFullscreen() {
+            const el = document.documentElement;
+            if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+            else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            else if(el.msRequestFullscreen) el.msRequestFullscreen();
+          }
 
-            setTimeout(goFullscreen, 500);
-            document.addEventListener("click", () => { goFullscreen(); videoEl.play(); });
-            document.addEventListener("touchstart", () => { goFullscreen(); videoEl.play(); });
+          setTimeout(goFullscreen, 500);
+          document.addEventListener("click", () => { goFullscreen(); videoEl.play(); });
+          document.addEventListener("touchstart", () => { goFullscreen(); videoEl.play(); });
 
-            // Refresh tab exactly when video ends
-            videoEl.addEventListener("ended", () => location.reload());
-          };
+          // Loop video instantly without page reload
+          videoEl.addEventListener("ended", () => {
+            videoEl.currentTime = 0;
+            videoEl.play();
+          });
+
+          // Ensure video plays (autoplay restrictions)
+          videoEl.play().catch(() => console.log("Autoplay blocked, click to start"));
         <\/script>
       </body>
       </html>
