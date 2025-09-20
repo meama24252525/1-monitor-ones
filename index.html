@@ -189,12 +189,12 @@
 <body>
     <div class="header">
         <div class="title">🍽️ Menu Display System</div>
-        <div class="status" id="status">Loading menu videos...</div>
+        <div class="status" id="status">Auto-loading from repository: 1-monitor-ones</div>
     </div>
 
     <div id="content" class="loading">
         <div class="spinner"></div>
-        Auto-loading menu.mp4 files from your repository...
+        Auto-loading MP4 files from "1 monitors" and "2 monitors" folders...
     </div>
 
     <div id="fullscreen" class="fullscreen">
@@ -205,32 +205,40 @@
     <script>
         // CHANGE THIS: Replace 'your-repo-name' with your actual repository name
         const username = 'meama24252525';
-        const repoName = 'your-repo-name'; // ← Change this to your repository name
+        const repoName = '1-monitor-ones'; // ← Your repository name from the screenshot
         
         let menus1 = [];
         let menus2 = [];
 
         async function loadMenus(repo = repoName) {
             
-            document.getElementById('status').textContent = 'Scanning repository for menu files...';
-            document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Scanning for menu.mp4 files...</div>';
+            document.getElementById('status').textContent = 'Scanning "1 monitors" and "2 monitors" folders...';
+            document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Scanning for MP4 files...</div>';
             
             try {
                 // Load menu files from both folders with correct names
-                menus1 = await loadMenusFromFolder('1 monitors ones', repo);
-                menus2 = await loadMenusFromFolder('2 monitor ones', repo);
+                menus1 = await loadMenusFromFolder('1 monitors', repo);
+                menus2 = await loadMenusFromFolder('2 monitors', repo);
                 
                 displayMenus();
                 
                 const totalMenus = menus1.length + menus2.length;
-                document.getElementById('status').textContent = `Found ${totalMenus} menu files (${menus1.length} for 1-monitor, ${menus2.length} for 2-monitor)`;
+                document.getElementById('status').textContent = `Found ${totalMenus} MP4 files (${menus1.length} in "1 monitors", ${menus2.length} in "2 monitors")`;
+                
+                // Show debugging info in console
+                console.log('Final results:', {
+                    repo: repo,
+                    folder1: menus1.length + ' files in "1 monitors"',
+                    folder2: menus2.length + ' files in "2 monitors"',
+                    total: totalMenus
+                });
                 
             } catch (error) {
                 document.getElementById('content').innerHTML = `
                     <div class="error">
                         <h3>❌ Could not load menus</h3>
                         <p>${error.message}</p>
-                        <small>Make sure the repository "${repo}" exists and has "1 monitors ones" and "2 monitor ones" folders with menu.mp4 files</small>
+                        <small>Make sure the repository "${repo}" exists and has "1 monitors" and "2 monitors" folders with .mp4 files</small>
                     </div>
                 `;
                 document.getElementById('status').textContent = 'Error loading menu files';
@@ -240,19 +248,25 @@
         async function loadMenusFromFolder(folderName, repo) {
             try {
                 const url = `https://api.github.com/repos/${username}/${repo}/contents/${encodeURIComponent(folderName)}`;
+                console.log(`Checking folder: ${folderName} at ${url}`);
                 const response = await fetch(url);
                 
                 if (!response.ok) {
-                    console.log(`Folder "${folderName}" not found`);
+                    console.log(`Folder "${folderName}" not found - Status: ${response.status}`);
                     return [];
                 }
                 
                 const contents = await response.json();
-                return contents.filter(item => 
+                console.log(`Found ${contents.length} items in "${folderName}":`, contents.map(item => item.name));
+                
+                // Find ALL .mp4 files in the folder
+                const mp4Files = contents.filter(item => 
                     item.type === 'file' && 
-                    item.name.toLowerCase().includes('menu') &&
                     item.name.toLowerCase().endsWith('.mp4')
                 );
+                
+                console.log(`MP4 files in "${folderName}":`, mp4Files.map(item => item.name));
+                return mp4Files;
                 
             } catch (error) {
                 console.log(`Error loading from "${folderName}":`, error);
@@ -302,9 +316,10 @@
             if (menus1.length === 0 && menus2.length === 0) {
                 html = `
                     <div class="loading">
-                        <h3>📁 No menu.mp4 files found</h3>
-                        <p>Looking for files with "menu" in the name ending with .mp4</p>
-                        <p>Expected folders: "1 monitors ones" and "2 monitor ones"</p>
+                        <h3>📁 No .mp4 files found</h3>
+                        <p>Looking for .mp4 files in folders:</p>
+                        <p>📂 "1 monitors" and 📂 "2 monitors"</p>
+                        <p>Repository: ${repoName}</p>
                     </div>
                 `;
             }
