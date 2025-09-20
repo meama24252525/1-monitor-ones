@@ -402,13 +402,14 @@
         
         let menus1 = [];
         let menus2 = [];
+        let menusVertical = [];
         let selectedFiles = [];
         let selectedFile = null;
 
         async function loadMenus(repo = repoName) {
             clearSelection();
             
-            document.getElementById('status').textContent = 'Scanning "1 monitors", "2 monitors/menu1" and "2 monitors/menu2" folders...';
+            document.getElementById('status').textContent = 'Scanning "1 monitors", "2 monitors", and "vertical monitors" folders...';
             document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Scanning for MP4 files...</div>';
             
             try {
@@ -419,9 +420,14 @@
                 const menu2Folder2 = await loadMenusFromFolder('2 monitors/menu2', repo);
                 menus2 = [...menu2Folder1, ...menu2Folder2];
                 
+                // For vertical monitors, check monitor 1 and monitor 2 subfolders
+                const verticalFolder1 = await loadMenusFromFolder('vertical monitors/monitor 1', repo);
+                const verticalFolder2 = await loadMenusFromFolder('vertical monitors/monitor 2', repo);
+                menusVertical = [...verticalFolder1, ...verticalFolder2];
+                
                 displayMenus();
                 
-                const totalMenus = menus1.length + menus2.length;
+                const totalMenus = menus1.length + menus2.length + menusVertical.length;
                 document.getElementById('status').textContent = `Found ${totalMenus} MP4 files. Click any card to select, then upload a replacement.`;
                 
             } catch (error) {
@@ -429,7 +435,7 @@
                     <div class="error">
                         <h3>❌ Could not load menus</h3>
                         <p>${error.message}</p>
-                        <small>Make sure the repository "${repo}" exists and has "1 monitors" and "2 monitors/menu1" & "2 monitors/menu2" folders with .mp4 files</small>
+                        <small>Make sure the repository "${repo}" exists and has the required folders with .mp4 files</small>
                     </div>
                 `;
                 document.getElementById('status').textContent = 'Error loading menu files';
@@ -535,7 +541,42 @@
                 `;
             }
             
-            if (menus1.length === 0 && menus2.length === 0) {
+            if (menusVertical.length > 0) {
+                html += `
+                    <div class="folder-section">
+                        <div class="folder-title">📱 Vertical Monitor Menus (${menusVertical.length})</div>
+                        <div class="grid">
+                            ${menusVertical.map((menu, index) => {
+                                const monitorNum = menu.path.includes('/monitor 1/') ? 'monitor 1' : 'monitor 2';
+                                return `
+                                    <div class="menu-card monitors-2" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', 'vertical monitors/${monitorNum}')">
+                                        <button class="delete-btn" onclick="event.stopPropagation(); deleteFile('${menu.path}', '${menu.sha}', '${menu.name}')" title="Delete file">🗑️</button>
+                                        <div class="folder-badge">${monitorNum}</div>
+                                        
+                                        <div class="video-thumbnail">
+                                            <video preload="metadata" muted>
+                                                <source src="${menu.download_url}#t=1" type="video/mp4">
+                                            </video>
+                                            <div class="video-overlay">
+                                                <div class="thumbnail-play-icon" onclick="event.stopPropagation(); playMenu('${menu.download_url}', '${menu.name}')">▶️</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="video-content">
+                                            <div class="menu-name">${menu.name}</div>
+                                            <div class="menu-info">${(menu.size / (1024*1024)).toFixed(1)} MB</div>
+                                        </div>
+                                        
+                                        <div class="select-indicator">SELECTED</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (menus1.length === 0 && menus2.length === 0 && menusVertical.length === 0) {
                 html = `
                     <div class="loading">
                         <h3>📁 No .mp4 files found</h3>
