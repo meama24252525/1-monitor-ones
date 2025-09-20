@@ -270,6 +270,7 @@
     <div class="controls">
         <button class="btn config" onclick="toggleConfig()">⚙️ Configure</button>
         <button class="btn" onclick="refreshVideos()">🔄 Refresh</button>
+        <button class="btn" onclick="showDebugInfo()" style="background: #ff9800;">🐛 Debug</button>
         <div class="autoplay-controls">
             <span>Auto-rotate:</span>
             <label class="switch">
@@ -295,15 +296,15 @@
             <input id="token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxx">
         </div>
         <div class="config-row">
-            <button class="btn" onclick="saveConfig()">💾 Save & Load Menus</button>
-            <small style="color: #666;">Will scan "1 monitors" and "2 monitors" folders for menu.mp4 files</small>
+            <button class="btn" onclick="saveConfig()">💾 Save & Scan Repository</button>
+            <small style="color: #666;">Will find all MP4 files in your repository</small>
         </div>
     </div>
     
     <div id="gallery" class="gallery">
         <div class="loading">
             <div class="loader"></div>
-            <p>Click Configure to set up your GitHub repository<br><small>Will look for menu.mp4 files in "1 monitors" and "2 monitors" folders</small></p>
+            <p>Click Configure to set up your GitHub repository<br><small>Will find all MP4 files automatically</small></p>
         </div>
     </div>
     
@@ -352,15 +353,46 @@
 
         async function loadVideos() {
             const gallery = document.getElementById('gallery');
-            gallery.innerHTML = '<div class="loading"><div class="loader"></div><p>Loading menu displays from "1 monitors" and "2 monitors" folders...</p></div>';
+            gallery.innerHTML = '<div class="loading"><div class="loader"></div><p>Scanning repository for MP4 files...</p></div>';
             
             try {
                 videos = await fetchAllVideos();
                 renderVideoGallery();
                 updateVideoCount();
+                
+                if (videos.length > 0) {
+                    console.log(`Found ${videos.length} videos:`, videos.map(v => v.displayName));
+                }
             } catch (error) {
-                gallery.innerHTML = `<div class="no-videos"><h3>❌ Error loading menu displays</h3><p>${error.message}</p><p>Make sure you have "1 monitors" and "2 monitors" folders with menu.mp4 files</p></div>`;
+                console.error('Error loading videos:', error);
+                gallery.innerHTML = `
+                    <div class="no-videos">
+                        <h3>❌ Error loading repository</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Troubleshooting:</strong></p>
+                        <ul style="text-align: left; max-width: 500px; margin: 15px auto;">
+                            <li>Check your repository name (case-sensitive)</li>
+                            <li>Make sure the repository exists and is accessible</li>
+                            <li>Add a GitHub token if it's a private repository</li>
+                            <li>Check that you have MP4 files in your repo</li>
+                        </ul>
+                        <button class="btn" onclick="showDebugInfo()" style="margin-top: 15px;">🐛 Show Debug Info</button>
+                    </div>
+                `;
             }
+        }
+
+        function showDebugInfo() {
+            const debugInfo = window.debugInfo || ['No debug information available yet. Try refreshing first.'];
+            const debugText = debugInfo.join('\n');
+            
+            alert(`Debug Information:\n\n${debugText}\n\nRepository: ${config.username}/${config.repo}\nToken: ${config.token ? 'Provided' : 'Not provided'}\n\nCheck the browser console for more details.`);
+            
+            console.log('Full debug info:', {
+                config: config,
+                debugInfo: debugInfo,
+                videos: videos
+            });
         }
 
         async function fetchAllVideos() {
@@ -368,59 +400,72 @@
             if (config.token) headers['Authorization'] = `token ${config.token}`;
             
             let allVideos = [];
-            const folders = ['1 monitors', '2 monitors'];
+            let debugInfo = [];
             
-            for (const folder of folders) {
-                try {
-                    const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${encodeURIComponent(folder)}`;
-                    const response = await fetch(url, { headers });
+            // First, let's see what's in the root directory
+            try {
+                const rootUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/`;
+                const rootResponse = await fetch(rootUrl, { headers });
+                
+                if (rootResponse.ok) {
+                    const rootContents = await rootResponse.json();
+                    debugInfo.push(`Found ${rootContents.length} items in root`);
                     
-                    if (response.ok) {
-                        const contents = await response.json();
-                        
-                        for (const item of (Array.isArray(contents) ? contents : [contents])) {
-                            if (item.type === 'file' && item.name.toLowerCase().includes('menu') && item.name.toLowerCase().endsWith('.mp4')) {
-                                allVideos.push({
-                                    name: item.name,
-                                    path: item.path,
-                                    url: item.download_url,
-                                    size: item.size,
-                                    folder: folder,
-                                    displayName: `${folder} - ${item.name}`
-                                });
+                    // Look for folders and files
+                    for (const item of rootContents) {
+                        if (item.type === 'dir') {
+                            debugInfo.push(`Found folder: "${item.name}"`);
+                            
+                            // Check if it's one of our target folders (flexible matching)
+                            if (item.name.includes('monitor') || item.name.includes('1') || item.name.includes('2')) {
+                                try {
+                                    const folderUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${encodeURIComponent(item.name)}`;
+                                    const folderResponse = await fetch(folderUrl, { headers });
+                                    
+                                    if (folderResponse.ok) {
+                                        const folderContents = await folderResponse.json();
+                                        debugInfo.push(`Folder "${item.name}" has ${folderContents.length} items`);
+                                        
+                                        for (const file of folderContents) {
+                                            if (file.type === 'file' && file.name.toLowerCase().endsWith('.mp4')) {
+                                                debugInfo.push(`Found MP4: ${file.name} in ${item.name}`);
+                                                allVideos.push({
+                                                    name: file.name,
+                                                    path: file.path,
+                                                    url: file.download_url,
+                                                    size: file.size,
+                                                    folder: item.name,
+                                                    displayName: `${item.name} - ${file.name}`
+                                                });
+                                            }
+                                        }
+                                    }
+                                } catch (error) {
+                                    debugInfo.push(`Error accessing folder "${item.name}": ${error.message}`);
+                                }
                             }
+                        } else if (item.type === 'file' && item.name.toLowerCase().endsWith('.mp4')) {
+                            debugInfo.push(`Found MP4 in root: ${item.name}`);
+                            allVideos.push({
+                                name: item.name,
+                                path: item.path,
+                                url: item.download_url,
+                                size: item.size,
+                                folder: 'root',
+                                displayName: item.name
+                            });
                         }
                     }
-                } catch (error) {
-                    console.log(`Could not access folder "${folder}":`, error.message);
+                } else {
+                    throw new Error(`Cannot access repository: ${rootResponse.status} ${rootResponse.statusText}`);
                 }
+            } catch (error) {
+                throw new Error(`Repository access failed: ${error.message}`);
             }
             
-            if (allVideos.length === 0) {
-                // Fallback: try to find any menu.mp4 files in root
-                try {
-                    const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/`;
-                    const response = await fetch(url, { headers });
-                    
-                    if (response.ok) {
-                        const contents = await response.json();
-                        for (const item of contents) {
-                            if (item.type === 'file' && item.name.toLowerCase().includes('menu') && item.name.toLowerCase().endsWith('.mp4')) {
-                                allVideos.push({
-                                    name: item.name,
-                                    path: item.path,
-                                    url: item.download_url,
-                                    size: item.size,
-                                    folder: 'root',
-                                    displayName: item.name
-                                });
-                            }
-                        }
-                    }
-                } catch (error) {
-                    throw new Error(`Cannot access repository: ${error.message}`);
-                }
-            }
+            // Store debug info for troubleshooting
+            window.debugInfo = debugInfo;
+            console.log('Repository scan results:', debugInfo);
             
             return allVideos;
         }
@@ -429,7 +474,18 @@
             const gallery = document.getElementById('gallery');
             
             if (videos.length === 0) {
-                gallery.innerHTML = '<div class="no-videos"><h3>📁 No menu.mp4 files found</h3><p>Looking for menu.mp4 files in:<br>• "1 monitors" folder<br>• "2 monitors" folder<br><br>Upload menu.mp4 files to these folders in your repository</p></div>';
+                gallery.innerHTML = `
+                    <div class="no-videos">
+                        <h3>📁 No MP4 files found</h3>
+                        <p>Looking for any .mp4 files in your repository</p>
+                        <p><strong>What I'm searching for:</strong></p>
+                        <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                            <li>Any folders with "monitor", "1", or "2" in the name</li>
+                            <li>Any .mp4 files in those folders or root</li>
+                        </ul>
+                        <p><button class="btn" onclick="showDebugInfo()" style="margin-top: 15px;">🐛 Show Debug Info</button></p>
+                    </div>
+                `;
                 return;
             }
             
@@ -447,7 +503,7 @@
                         <div class="video-title">${video.displayName}</div>
                         <div class="video-meta">
                             <span>${(video.size / (1024*1024)).toFixed(1)} MB</span>
-                            <span>Menu ${index + 1}</span>
+                            <span>Video ${index + 1}</span>
                         </div>
                         <div class="video-path">📁 ${video.folder}/${video.name}</div>
                     </div>
@@ -514,7 +570,7 @@
         }
 
         function updateVideoCount() {
-            document.getElementById('videoCount').textContent = `${videos.length} menu displays`;
+            document.getElementById('videoCount').textContent = `${videos.length} videos found`;
         }
 
         // Keyboard shortcuts
