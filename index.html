@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Video Gallery Signage</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background: #f5f5f5; 
+            color: #333; 
+        }
+        
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 { font-size: 1.5rem; color: #333; }
+        .header-info { 
+            background: #e3f2fd; 
+            padding: 8px 15px; 
+            border-radius: 20px; 
+            font-size: 14px; 
+            color: #1976d2;
+        }
+        
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #1976d2; }
+        .btn.config { background: #666; }
+        .btn.config:hover { background: #333; }
+        
+        .config-panel {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            display: none;
+        }
+        .config-panel.show { display: block; }
+        .config-row { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; }
+        .config-row input { 
+            padding: 8px 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 14px;
+            min-width: 200px;
+        }
+        .config-row label { min-width: 120px; font-weight: 500; }
+        
+        .gallery {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .video-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .video-card.playing {
+            ring: 3px solid #2196f3;
+            transform: scale(1.02);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .video-card:hover .play-overlay { opacity: 1; }
+        
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .video-info {
+            padding: 15px;
+        }
+        
+        .video-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+            word-break: break-word;
+        }
+        
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .video-path {
+            font-size: 11px;
+            color: #999;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        
+        .fullscreen-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fullscreen-player.show { display: flex; }
+        
+        .fullscreen-video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            width: 50px;
+            height: 50px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2196f3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-videos {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        
+        .autoplay-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #ccc; transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background: #2196f3; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎬 Menu Display Signage</h1>
+        <div class="header-info">
+            <span id="videoCount">0 menus</span> • 
+            <span id="repoInfo">Configure repository</span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn config" onclick="toggleConfig()">⚙️ Configure</button>
+        <button class="btn" onclick="refreshVideos()">🔄 Refresh</button>
+        <div class="autoplay-controls">
+            <span>Auto-rotate:</span>
+            <label class="switch">
+                <input type="checkbox" id="autoplayToggle" onchange="toggleAutoplay()">
+                <span class="slider"></span>
+            </label>
+            <input type="number" id="intervalInput" value="10" min="5" max="300" style="width: 60px; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
+            <span>seconds</span>
+        </div>
+    </div>
+    
+    <div id="configPanel" class="config-panel">
+        <div class="config-row">
+            <label>Username:</label>
+            <input id="username" placeholder="meama24252525" value="meama24252525">
+        </div>
+        <div class="config-row">
+            <label>Repository:</label>
+            <input id="repo" placeholder="my-video-repo">
+        </div>
+        <div class="config-row">
+            <label>GitHub Token:</label>
+            <input id="token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxx">
+        </div>
+        <div class="config-row">
+            <button class="btn" onclick="saveConfig()">💾 Save & Load Menus</button>
+            <small style="color: #666;">Will scan "1 monitors" and "2 monitors" folders for menu.mp4 files</small>
+        </div>
+    </div>
+    
+    <div id="gallery" class="gallery">
+        <div class="loading">
+            <div class="loader"></div>
+            <p>Click Configure to set up your GitHub repository<br><small>Will look for menu.mp4 files in "1 monitors" and "2 monitors" folders</small></p>
+        </div>
+    </div>
+    
+    <div id="fullscreenPlayer" class="fullscreen-player">
+        <video id="fullscreenVideo" class="fullscreen-video" controls autoplay></video>
+        <button class="close-fullscreen" onclick="closeFullscreen()">✕</button>
+    </div>
+
+    <script>
+        let config = { username: 'meama24252525', repo: '', token: '' };
+        let videos = [];
+        let currentVideoIndex = 0;
+        let autoplayInterval = null;
+        let isConfigVisible = false;
+
+        // Load saved config
+        const saved = localStorage.getItem('video-gallery-config');
+        if (saved) {
+            config = { ...config, ...JSON.parse(saved) };
+            document.getElementById('username').value = config.username;
+            document.getElementById('repo').value = config.repo;
+            document.getElementById('token').value = config.token;
+            if (config.repo) loadVideos();
+        }
+
+        function toggleConfig() {
+            isConfigVisible = !isConfigVisible;
+            document.getElementById('configPanel').classList.toggle('show', isConfigVisible);
+        }
+
+        function saveConfig() {
+            config.username = document.getElementById('username').value.trim();
+            config.repo = document.getElementById('repo').value.trim();
+            config.token = document.getElementById('token').value.trim();
+            
+            if (!config.repo) {
+                alert('Please enter a repository name');
+                return;
+            }
+            
+            localStorage.setItem('video-gallery-config', JSON.stringify(config));
+            document.getElementById('repoInfo').textContent = `${config.username}/${config.repo}`;
+            toggleConfig();
+            loadVideos();
+        }
+
+        async function loadVideos() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '<div class="loading"><div class="loader"></div><p>Loading menu displays from "1 monitors" and "2 monitors" folders...</p></div>';
+            
+            try {
+                videos = await fetchAllVideos();
+                renderVideoGallery();
+                updateVideoCount();
+            } catch (error) {
+                gallery.innerHTML = `<div class="no-videos"><h3>❌ Error loading menu displays</h3><p>${error.message}</p><p>Make sure you have "1 monitors" and "2 monitors" folders with menu.mp4 files</p></div>`;
+            }
+        }
+
+        async function fetchAllVideos() {
+            const headers = {};
+            if (config.token) headers['Authorization'] = `token ${config.token}`;
+            
+            let allVideos = [];
+            const folders = ['1 monitors', '2 monitors'];
+            
+            for (const folder of folders) {
+                try {
+                    const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${encodeURIComponent(folder)}`;
+                    const response = await fetch(url, { headers });
+                    
+                    if (response.ok) {
+                        const contents = await response.json();
+                        
+                        for (const item of (Array.isArray(contents) ? contents : [contents])) {
+                            if (item.type === 'file' && item.name.toLowerCase().includes('menu') && item.name.toLowerCase().endsWith('.mp4')) {
+                                allVideos.push({
+                                    name: item.name,
+                                    path: item.path,
+                                    url: item.download_url,
+                                    size: item.size,
+                                    folder: folder,
+                                    displayName: `${folder} - ${item.name}`
+                                });
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Could not access folder "${folder}":`, error.message);
+                }
+            }
+            
+            if (allVideos.length === 0) {
+                // Fallback: try to find any menu.mp4 files in root
+                try {
+                    const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/`;
+                    const response = await fetch(url, { headers });
+                    
+                    if (response.ok) {
+                        const contents = await response.json();
+                        for (const item of contents) {
+                            if (item.type === 'file' && item.name.toLowerCase().includes('menu') && item.name.toLowerCase().endsWith('.mp4')) {
+                                allVideos.push({
+                                    name: item.name,
+                                    path: item.path,
+                                    url: item.download_url,
+                                    size: item.size,
+                                    folder: 'root',
+                                    displayName: item.name
+                                });
+                            }
+                        }
+                    }
+                } catch (error) {
+                    throw new Error(`Cannot access repository: ${error.message}`);
+                }
+            }
+            
+            return allVideos;
+        }
+
+        function renderVideoGallery() {
+            const gallery = document.getElementById('gallery');
+            
+            if (videos.length === 0) {
+                gallery.innerHTML = '<div class="no-videos"><h3>📁 No menu.mp4 files found</h3><p>Looking for menu.mp4 files in:<br>• "1 monitors" folder<br>• "2 monitors" folder<br><br>Upload menu.mp4 files to these folders in your repository</p></div>';
+                return;
+            }
+            
+            gallery.innerHTML = videos.map((video, index) => `
+                <div class="video-card" onclick="playVideo(${index})">
+                    <div class="video-thumbnail">
+                        <video preload="metadata" muted>
+                            <source src="${video.url}#t=1" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-icon">▶️</div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${video.displayName}</div>
+                        <div class="video-meta">
+                            <span>${(video.size / (1024*1024)).toFixed(1)} MB</span>
+                            <span>Menu ${index + 1}</span>
+                        </div>
+                        <div class="video-path">📁 ${video.folder}/${video.name}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playVideo(index) {
+            currentVideoIndex = index;
+            const video = videos[index];
+            
+            // Update visual state
+            document.querySelectorAll('.video-card').forEach((card, i) => {
+                card.classList.toggle('playing', i === index);
+            });
+            
+            // Play in fullscreen
+            const fullscreenVideo = document.getElementById('fullscreenVideo');
+            fullscreenVideo.src = video.url;
+            document.getElementById('fullscreenPlayer').classList.add('show');
+            fullscreenVideo.play();
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenPlayer').classList.remove('show');
+            document.getElementById('fullscreenVideo').pause();
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.classList.remove('playing');
+            });
+        }
+
+        function toggleAutoplay() {
+            const isEnabled = document.getElementById('autoplayToggle').checked;
+            const interval = parseInt(document.getElementById('intervalInput').value) || 10;
+            
+            if (isEnabled && videos.length > 0) {
+                startAutoplay(interval);
+            } else {
+                stopAutoplay();
+            }
+        }
+
+        function startAutoplay(seconds) {
+            stopAutoplay();
+            autoplayInterval = setInterval(() => {
+                currentVideoIndex = (currentVideoIndex + 1) % videos.length;
+                playVideo(currentVideoIndex);
+            }, seconds * 1000);
+        }
+
+        function stopAutoplay() {
+            if (autoplayInterval) {
+                clearInterval(autoplayInterval);
+                autoplayInterval = null;
+            }
+        }
+
+        function refreshVideos() {
+            if (config.repo) {
+                loadVideos();
+            } else {
+                alert('Please configure your repository first');
+            }
+        }
+
+        function updateVideoCount() {
+            document.getElementById('videoCount').textContent = `${videos.length} menu displays`;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeFullscreen();
+            if (e.key === 'ArrowRight' && videos.length > 0) {
+                currentVideoIndex = (currentVideoIndex + 1) % videos.length;
+                playVideo(currentVideoIndex);
+            }
+            if (e.key === 'ArrowLeft' && videos.length > 0) {
+                currentVideoIndex = currentVideoIndex === 0 ? videos.length - 1 : currentVideoIndex - 1;
+                playVideo(currentVideoIndex);
+            }
+        });
+
+        // Auto-close fullscreen when video ends
+        document.getElementById('fullscreenVideo').addEventListener('ended', () => {
+            if (document.getElementById('autoplayToggle').checked) {
+                currentVideoIndex = (currentVideoIndex + 1) % videos.length;
+                playVideo(currentVideoIndex);
+            } else {
+                closeFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
