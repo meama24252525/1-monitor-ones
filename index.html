@@ -3,179 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Video Gallery Signage</title>
+    <title>Menu Display System</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-            background: #f5f5f5; 
-            color: #333; 
+            background: #f0f2f5; 
+            padding: 20px; 
         }
         
         .header {
             background: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
         }
         
-        .header h1 { font-size: 1.5rem; color: #333; }
-        .header-info { 
-            background: #e3f2fd; 
-            padding: 8px 15px; 
-            border-radius: 20px; 
-            font-size: 14px; 
-            color: #1976d2;
-        }
-        
-        .controls {
-            background: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .btn {
-            background: #2196f3;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        .btn:hover { background: #1976d2; }
-        .btn.config { background: #666; }
-        .btn.config:hover { background: #333; }
-        
-        .config-panel {
-            background: white;
-            padding: 20px;
-            border-bottom: 1px solid #ddd;
-            display: none;
-        }
-        .config-panel.show { display: block; }
-        .config-row { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; }
-        .config-row input { 
-            padding: 8px 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            font-size: 14px;
-            min-width: 200px;
-        }
-        .config-row label { min-width: 120px; font-weight: 500; }
-        
-        .gallery {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-        }
-        
-        .video-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .video-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        
-        .video-card.playing {
-            ring: 3px solid #2196f3;
-            transform: scale(1.02);
-        }
-        
-        .video-thumbnail {
-            width: 100%;
-            height: 160px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .video-thumbnail video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .play-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .video-card:hover .play-overlay { opacity: 1; }
-        
-        .play-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .title {
             font-size: 24px;
+            font-weight: 600;
             color: #333;
+            margin-bottom: 10px;
         }
         
-        .video-info {
-            padding: 15px;
+        .status {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
         }
         
-        .video-title {
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+        }
+        
+        .menu-card {
+            background: #4a90e2;
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .menu-card.monitors-1 { 
+            background: linear-gradient(135deg, #4a90e2, #357abd); 
+        }
+        .menu-card.monitors-2 { 
+            background: linear-gradient(135deg, #7b68ee, #6a4fd8); 
+        }
+        
+        .menu-name {
             font-weight: 600;
             font-size: 16px;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 10px;
             word-break: break-word;
         }
         
-        .video-meta {
-            display: flex;
-            justify-content: space-between;
+        .menu-info {
             font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 10px;
         }
         
-        .video-path {
-            font-size: 11px;
-            color: #999;
-            background: #f8f9fa;
+        .folder-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.3);
             padding: 4px 8px;
-            border-radius: 4px;
-            word-break: break-all;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
         }
         
-        .fullscreen-player {
+        .play-icon {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+        
+        .folder-section {
+            margin-bottom: 30px;
+        }
+        
+        .folder-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            padding: 10px 0;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            padding: 60px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .fullscreen {
             position: fixed;
             top: 0;
             left: 0;
@@ -188,412 +163,176 @@
             justify-content: center;
         }
         
-        .fullscreen-player.show { display: flex; }
+        .fullscreen.show { display: flex; }
         
-        .fullscreen-video {
+        .fullscreen video {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
         
-        .close-fullscreen {
+        .close-btn {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0,0,0,0.7);
-            color: white;
+            background: rgba(255,255,255,0.9);
             border: none;
-            padding: 12px;
+            padding: 15px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             width: 50px;
             height: 50px;
         }
-        
-        .loading {
-            text-align: center;
-            padding: 60px;
-            color: #666;
-        }
-        
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2196f3;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .no-videos {
-            text-align: center;
-            padding: 60px;
-            color: #666;
-        }
-        
-        .autoplay-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #ccc; transition: .4s; border-radius: 24px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background: white; transition: .4s; border-radius: 50%;
-        }
-        input:checked + .slider { background: #2196f3; }
-        input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🎬 Menu Display Signage</h1>
-        <div class="header-info">
-            <span id="videoCount">0 menus</span> • 
-            <span id="repoInfo">Configure repository</span>
-        </div>
+        <div class="title">🍽️ Menu Display System</div>
+        <div class="status" id="status">Loading menu videos...</div>
     </div>
-    
-    <div class="controls">
-        <button class="btn config" onclick="toggleConfig()">⚙️ Configure</button>
-        <button class="btn" onclick="refreshVideos()">🔄 Refresh</button>
-        <button class="btn" onclick="showDebugInfo()" style="background: #ff9800;">🐛 Debug</button>
-        <div class="autoplay-controls">
-            <span>Auto-rotate:</span>
-            <label class="switch">
-                <input type="checkbox" id="autoplayToggle" onchange="toggleAutoplay()">
-                <span class="slider"></span>
-            </label>
-            <input type="number" id="intervalInput" value="10" min="5" max="300" style="width: 60px; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
-            <span>seconds</span>
-        </div>
+
+    <div id="content" class="loading">
+        <div class="spinner"></div>
+        Auto-loading menu.mp4 files from your repository...
     </div>
-    
-    <div id="configPanel" class="config-panel">
-        <div class="config-row">
-            <label>Username:</label>
-            <input id="username" placeholder="meama24252525" value="meama24252525">
-        </div>
-        <div class="config-row">
-            <label>Repository:</label>
-            <input id="repo" placeholder="my-video-repo">
-        </div>
-        <div class="config-row">
-            <label>GitHub Token:</label>
-            <input id="token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxx">
-        </div>
-        <div class="config-row">
-            <button class="btn" onclick="saveConfig()">💾 Save & Scan Repository</button>
-            <small style="color: #666;">Will find all MP4 files in your repository</small>
-        </div>
-    </div>
-    
-    <div id="gallery" class="gallery">
-        <div class="loading">
-            <div class="loader"></div>
-            <p>Click Configure to set up your GitHub repository<br><small>Will find all MP4 files automatically</small></p>
-        </div>
-    </div>
-    
-    <div id="fullscreenPlayer" class="fullscreen-player">
-        <video id="fullscreenVideo" class="fullscreen-video" controls autoplay></video>
-        <button class="close-fullscreen" onclick="closeFullscreen()">✕</button>
+
+    <div id="fullscreen" class="fullscreen">
+        <video id="fullscreenVideo" controls autoplay></video>
+        <button class="close-btn" onclick="closeVideo()">✕</button>
     </div>
 
     <script>
-        let config = { username: 'meama24252525', repo: '', token: '' };
-        let videos = [];
-        let currentVideoIndex = 0;
-        let autoplayInterval = null;
-        let isConfigVisible = false;
+        // CHANGE THIS: Replace 'your-repo-name' with your actual repository name
+        const username = 'meama24252525';
+        const repoName = 'your-repo-name'; // ← Change this to your repository name
+        
+        let menus1 = [];
+        let menus2 = [];
 
-        // Load saved config
-        const saved = localStorage.getItem('video-gallery-config');
-        if (saved) {
-            config = { ...config, ...JSON.parse(saved) };
-            document.getElementById('username').value = config.username;
-            document.getElementById('repo').value = config.repo;
-            document.getElementById('token').value = config.token;
-            if (config.repo) loadVideos();
-        }
-
-        function toggleConfig() {
-            isConfigVisible = !isConfigVisible;
-            document.getElementById('configPanel').classList.toggle('show', isConfigVisible);
-        }
-
-        function saveConfig() {
-            config.username = document.getElementById('username').value.trim();
-            config.repo = document.getElementById('repo').value.trim();
-            config.token = document.getElementById('token').value.trim();
+        async function loadMenus(repo = repoName) {
             
-            if (!config.repo) {
-                alert('Please enter a repository name');
-                return;
-            }
-            
-            localStorage.setItem('video-gallery-config', JSON.stringify(config));
-            document.getElementById('repoInfo').textContent = `${config.username}/${config.repo}`;
-            toggleConfig();
-            loadVideos();
-        }
-
-        async function loadVideos() {
-            const gallery = document.getElementById('gallery');
-            gallery.innerHTML = '<div class="loading"><div class="loader"></div><p>Scanning repository for MP4 files...</p></div>';
+            document.getElementById('status').textContent = 'Scanning repository for menu files...';
+            document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Scanning for menu.mp4 files...</div>';
             
             try {
-                videos = await fetchAllVideos();
-                renderVideoGallery();
-                updateVideoCount();
+                // Load menu files from both folders
+                menus1 = await loadMenusFromFolder('1 monitors', repo);
+                menus2 = await loadMenusFromFolder('2 monitors', repo);
                 
-                if (videos.length > 0) {
-                    console.log(`Found ${videos.length} videos:`, videos.map(v => v.displayName));
-                }
+                displayMenus();
+                
+                const totalMenus = menus1.length + menus2.length;
+                document.getElementById('status').textContent = `Found ${totalMenus} menu files (${menus1.length} for 1-monitor, ${menus2.length} for 2-monitor)`;
+                
             } catch (error) {
-                console.error('Error loading videos:', error);
-                gallery.innerHTML = `
-                    <div class="no-videos">
-                        <h3>❌ Error loading repository</h3>
-                        <p><strong>Error:</strong> ${error.message}</p>
-                        <p><strong>Troubleshooting:</strong></p>
-                        <ul style="text-align: left; max-width: 500px; margin: 15px auto;">
-                            <li>Check your repository name (case-sensitive)</li>
-                            <li>Make sure the repository exists and is accessible</li>
-                            <li>Add a GitHub token if it's a private repository</li>
-                            <li>Check that you have MP4 files in your repo</li>
-                        </ul>
-                        <button class="btn" onclick="showDebugInfo()" style="margin-top: 15px;">🐛 Show Debug Info</button>
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Could not load menus</h3>
+                        <p>${error.message}</p>
+                        <small>Make sure the repository "${repo}" exists and has "1 monitors" and "2 monitors" folders with menu.mp4 files</small>
+                    </div>
+                `;
+                document.getElementById('status').textContent = 'Error loading menu files';
+            }
+        }
+
+        async function loadMenusFromFolder(folderName, repo) {
+            try {
+                const url = `https://api.github.com/repos/${username}/${repo}/contents/${encodeURIComponent(folderName)}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    console.log(`Folder "${folderName}" not found`);
+                    return [];
+                }
+                
+                const contents = await response.json();
+                return contents.filter(item => 
+                    item.type === 'file' && 
+                    item.name.toLowerCase().includes('menu') &&
+                    item.name.toLowerCase().endsWith('.mp4')
+                );
+                
+            } catch (error) {
+                console.log(`Error loading from "${folderName}":`, error);
+                return [];
+            }
+        }
+
+        function displayMenus() {
+            let html = '';
+            
+            if (menus1.length > 0) {
+                html += `
+                    <div class="folder-section">
+                        <div class="folder-title">📺 Single Monitor Menus (${menus1.length})</div>
+                        <div class="grid">
+                            ${menus1.map((menu, index) => `
+                                <div class="menu-card monitors-1" onclick="playMenu('${menu.download_url}', '${menu.name}')">
+                                    <div class="folder-badge">1 Monitor</div>
+                                    <div class="menu-name">${menu.name}</div>
+                                    <div class="menu-info">${(menu.size / (1024*1024)).toFixed(1)} MB</div>
+                                    <div class="play-icon">▶️</div>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
             }
-        }
-
-        function showDebugInfo() {
-            const debugInfo = window.debugInfo || ['No debug information available yet. Try refreshing first.'];
-            const debugText = debugInfo.join('\n');
             
-            alert(`Debug Information:\n\n${debugText}\n\nRepository: ${config.username}/${config.repo}\nToken: ${config.token ? 'Provided' : 'Not provided'}\n\nCheck the browser console for more details.`);
-            
-            console.log('Full debug info:', {
-                config: config,
-                debugInfo: debugInfo,
-                videos: videos
-            });
-        }
-
-        async function fetchAllVideos() {
-            const headers = {};
-            if (config.token) headers['Authorization'] = `token ${config.token}`;
-            
-            let allVideos = [];
-            let debugInfo = [];
-            
-            // First, let's see what's in the root directory
-            try {
-                const rootUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/`;
-                const rootResponse = await fetch(rootUrl, { headers });
-                
-                if (rootResponse.ok) {
-                    const rootContents = await rootResponse.json();
-                    debugInfo.push(`Found ${rootContents.length} items in root`);
-                    
-                    // Look for folders and files
-                    for (const item of rootContents) {
-                        if (item.type === 'dir') {
-                            debugInfo.push(`Found folder: "${item.name}"`);
-                            
-                            // Check if it's one of our target folders (flexible matching)
-                            if (item.name.includes('monitor') || item.name.includes('1') || item.name.includes('2')) {
-                                try {
-                                    const folderUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${encodeURIComponent(item.name)}`;
-                                    const folderResponse = await fetch(folderUrl, { headers });
-                                    
-                                    if (folderResponse.ok) {
-                                        const folderContents = await folderResponse.json();
-                                        debugInfo.push(`Folder "${item.name}" has ${folderContents.length} items`);
-                                        
-                                        for (const file of folderContents) {
-                                            if (file.type === 'file' && file.name.toLowerCase().endsWith('.mp4')) {
-                                                debugInfo.push(`Found MP4: ${file.name} in ${item.name}`);
-                                                allVideos.push({
-                                                    name: file.name,
-                                                    path: file.path,
-                                                    url: file.download_url,
-                                                    size: file.size,
-                                                    folder: item.name,
-                                                    displayName: `${item.name} - ${file.name}`
-                                                });
-                                            }
-                                        }
-                                    }
-                                } catch (error) {
-                                    debugInfo.push(`Error accessing folder "${item.name}": ${error.message}`);
-                                }
-                            }
-                        } else if (item.type === 'file' && item.name.toLowerCase().endsWith('.mp4')) {
-                            debugInfo.push(`Found MP4 in root: ${item.name}`);
-                            allVideos.push({
-                                name: item.name,
-                                path: item.path,
-                                url: item.download_url,
-                                size: item.size,
-                                folder: 'root',
-                                displayName: item.name
-                            });
-                        }
-                    }
-                } else {
-                    throw new Error(`Cannot access repository: ${rootResponse.status} ${rootResponse.statusText}`);
-                }
-            } catch (error) {
-                throw new Error(`Repository access failed: ${error.message}`);
-            }
-            
-            // Store debug info for troubleshooting
-            window.debugInfo = debugInfo;
-            console.log('Repository scan results:', debugInfo);
-            
-            return allVideos;
-        }
-
-        function renderVideoGallery() {
-            const gallery = document.getElementById('gallery');
-            
-            if (videos.length === 0) {
-                gallery.innerHTML = `
-                    <div class="no-videos">
-                        <h3>📁 No MP4 files found</h3>
-                        <p>Looking for any .mp4 files in your repository</p>
-                        <p><strong>What I'm searching for:</strong></p>
-                        <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
-                            <li>Any folders with "monitor", "1", or "2" in the name</li>
-                            <li>Any .mp4 files in those folders or root</li>
-                        </ul>
-                        <p><button class="btn" onclick="showDebugInfo()" style="margin-top: 15px;">🐛 Show Debug Info</button></p>
+            if (menus2.length > 0) {
+                html += `
+                    <div class="folder-section">
+                        <div class="folder-title">📺📺 Dual Monitor Menus (${menus2.length})</div>
+                        <div class="grid">
+                            ${menus2.map((menu, index) => `
+                                <div class="menu-card monitors-2" onclick="playMenu('${menu.download_url}', '${menu.name}')">
+                                    <div class="folder-badge">2 Monitors</div>
+                                    <div class="menu-name">${menu.name}</div>
+                                    <div class="menu-info">${(menu.size / (1024*1024)).toFixed(1)} MB</div>
+                                    <div class="play-icon">▶️</div>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
-                return;
             }
             
-            gallery.innerHTML = videos.map((video, index) => `
-                <div class="video-card" onclick="playVideo(${index})">
-                    <div class="video-thumbnail">
-                        <video preload="metadata" muted>
-                            <source src="${video.url}#t=1" type="video/mp4">
-                        </video>
-                        <div class="play-overlay">
-                            <div class="play-icon">▶️</div>
-                        </div>
+            if (menus1.length === 0 && menus2.length === 0) {
+                html = `
+                    <div class="loading">
+                        <h3>📁 No menu.mp4 files found</h3>
+                        <p>Looking for files with "menu" in the name ending with .mp4</p>
+                        <p>Expected folders: "1 monitors" and "2 monitors"</p>
                     </div>
-                    <div class="video-info">
-                        <div class="video-title">${video.displayName}</div>
-                        <div class="video-meta">
-                            <span>${(video.size / (1024*1024)).toFixed(1)} MB</span>
-                            <span>Video ${index + 1}</span>
-                        </div>
-                        <div class="video-path">📁 ${video.folder}/${video.name}</div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }
+            
+            document.getElementById('content').innerHTML = html;
         }
 
-        function playVideo(index) {
-            currentVideoIndex = index;
-            const video = videos[index];
-            
-            // Update visual state
-            document.querySelectorAll('.video-card').forEach((card, i) => {
-                card.classList.toggle('playing', i === index);
-            });
-            
-            // Play in fullscreen
-            const fullscreenVideo = document.getElementById('fullscreenVideo');
-            fullscreenVideo.src = video.url;
-            document.getElementById('fullscreenPlayer').classList.add('show');
-            fullscreenVideo.play();
+        function playMenu(videoUrl, menuName) {
+            const video = document.getElementById('fullscreenVideo');
+            video.src = videoUrl;
+            document.getElementById('fullscreen').classList.add('show');
+            video.play();
         }
 
-        function closeFullscreen() {
-            document.getElementById('fullscreenPlayer').classList.remove('show');
+        function closeVideo() {
+            document.getElementById('fullscreen').classList.remove('show');
             document.getElementById('fullscreenVideo').pause();
-            document.querySelectorAll('.video-card').forEach(card => {
-                card.classList.remove('playing');
-            });
         }
 
-        function toggleAutoplay() {
-            const isEnabled = document.getElementById('autoplayToggle').checked;
-            const interval = parseInt(document.getElementById('intervalInput').value) || 10;
-            
-            if (isEnabled && videos.length > 0) {
-                startAutoplay(interval);
-            } else {
-                stopAutoplay();
-            }
+        // Auto-load when page opens
+        window.onload = function() {
+            // Automatically start loading menus
+            loadMenus();
         }
 
-        function startAutoplay(seconds) {
-            stopAutoplay();
-            autoplayInterval = setInterval(() => {
-                currentVideoIndex = (currentVideoIndex + 1) % videos.length;
-                playVideo(currentVideoIndex);
-            }, seconds * 1000);
-        }
-
-        function stopAutoplay() {
-            if (autoplayInterval) {
-                clearInterval(autoplayInterval);
-                autoplayInterval = null;
-            }
-        }
-
-        function refreshVideos() {
-            if (config.repo) {
-                loadVideos();
-            } else {
-                alert('Please configure your repository first');
-            }
-        }
-
-        function updateVideoCount() {
-            document.getElementById('videoCount').textContent = `${videos.length} videos found`;
-        }
-
-        // Keyboard shortcuts
+        // Close video with Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeFullscreen();
-            if (e.key === 'ArrowRight' && videos.length > 0) {
-                currentVideoIndex = (currentVideoIndex + 1) % videos.length;
-                playVideo(currentVideoIndex);
-            }
-            if (e.key === 'ArrowLeft' && videos.length > 0) {
-                currentVideoIndex = currentVideoIndex === 0 ? videos.length - 1 : currentVideoIndex - 1;
-                playVideo(currentVideoIndex);
-            }
-        });
-
-        // Auto-close fullscreen when video ends
-        document.getElementById('fullscreenVideo').addEventListener('ended', () => {
-            if (document.getElementById('autoplayToggle').checked) {
-                currentVideoIndex = (currentVideoIndex + 1) % videos.length;
-                playVideo(currentVideoIndex);
-            } else {
-                closeFullscreen();
-            }
+            if (e.key === 'Escape') closeVideo();
         });
     </script>
 </body>
