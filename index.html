@@ -99,16 +99,18 @@
             overflow: hidden;
         }
         
-        /* Vertical monitor thumbnails - portrait orientation */
+        /* Vertical monitor thumbnails - portrait crop within same frame */
         .menu-card.monitors-vertical .video-thumbnail {
-            height: 110px;
-            width: 65%;
-            margin: 0 auto;
-            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
-        .menu-card.monitors-vertical {
-            min-height: 170px;
+        .menu-card.monitors-vertical .video-thumbnail video {
+            width: auto;
+            height: 120%;
+            object-fit: cover;
+            object-position: center;
         }
         
         .video-thumbnail video {
@@ -562,7 +564,7 @@
                             ${menusVertical.map((menu, index) => {
                                 const monitorNum = menu.path.includes('/monitor 1/') ? 'monitor 1' : 'monitor 2';
                                 return `
-                                    <div class="menu-card monitors-2" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', 'vertical monitors/${monitorNum}')">
+                                    <div class="menu-card monitors-vertical" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', 'vertical monitors/${monitorNum}')">
                                         <button class="delete-btn" onclick="event.stopPropagation(); deleteFile('${menu.path}', '${menu.sha}', '${menu.name}')" title="Delete file">🗑️</button>
                                         <div class="folder-badge">${monitorNum}</div>
                                         
