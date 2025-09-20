@@ -26,10 +26,17 @@
             font-size: 24px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
-        .upload-btn, .refresh-btn {
+        .controls {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn {
             background: linear-gradient(135deg, #4a90e2, #357abd);
             color: white;
             border: none;
@@ -41,44 +48,134 @@
             transition: transform 0.2s;
         }
         
-        .upload-btn:hover, .refresh-btn:hover {
-            transform: translateY(-2px);
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { background: #6c757d; cursor: not-allowed; transform: none; }
+        .btn.refresh { background: linear-gradient(135deg, #28a745, #20c997); }
+        
+        .status {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
         }
         
-        .refresh-btn {
-            background: linear-gradient(135deg, #28a745, #20c997);
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1400px;
+        }
+        
+        .menu-card {
+            background: #4a90e2;
+            color: white;
+            border-radius: 10px;
+            padding: 0;
+            text-align: center;
+            position: relative;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .menu-card:hover { transform: translateY(-4px); }
+        .menu-card.monitors-1 { background: linear-gradient(135deg, #4a90e2, #357abd); }
+        .menu-card.monitors-2 { background: linear-gradient(135deg, #7b68ee, #6a4fd8); }
+        .menu-card.selected { ring: 3px solid #007bff; transform: scale(1.05); }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .video-thumbnail:hover .video-overlay { opacity: 1; }
+        
+        .thumbnail-play-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .video-content {
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .menu-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        
+        .menu-info {
+            font-size: 11px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
         }
         
         .delete-btn {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 6px;
+            left: 6px;
             background: rgba(255, 59, 48, 0.9);
             color: white;
             border: none;
-            padding: 6px;
+            padding: 4px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 12px;
-            width: 28px;
-            height: 28px;
-            transition: background 0.2s;
+            font-size: 10px;
+            width: 24px;
+            height: 24px;
         }
         
-        .menu-card.selected {
-            ring: 3px solid #007bff;
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
-        }
-        
-        .upload-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .upload-btn:disabled:hover {
-            transform: none;
+        .folder-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(255,255,255,0.3);
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 500;
         }
         
         .select-indicator {
@@ -86,19 +183,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,123,255,0.9);
+            background: rgba(0,123,255,0.95);
             color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 11px;
             font-weight: bold;
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 10;
         }
         
-        .menu-card.selected .select-indicator {
-            opacity: 1;
-        }
+        .menu-card.selected .select-indicator { opacity: 1; }
         
         .folder-section {
             margin-bottom: 30px;
@@ -180,22 +276,6 @@
             font-size: 18px;
             width: 50px;
             height: 50px;
-        }
-        
-        .menu-card.selected {
-            ring: 3px solid #007bff;
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
-        }
-        
-        .upload-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .upload-btn:disabled:hover {
-            transform: none;
         }
         
         .upload-overlay {
@@ -222,9 +302,7 @@
             text-align: center;
         }
         
-        .upload-progress {
-            margin: 20px 0;
-        }
+        .upload-progress { margin: 20px 0; }
         
         .progress-bar {
             width: 100%;
@@ -241,236 +319,27 @@
             transition: width 0.3s;
         }
         
-        .folder-selector {
-            margin: 15px 0;
-        }
-        
-        .folder-selector select {
+        .selection-info {
+            text-align: center;
+            margin: 10px 0;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-            max-width: 1400px;
-        }
-        
-        .video-thumbnail {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .video-thumbnail video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .video-content {
-            padding: 15px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .video-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .video-thumbnail:hover .video-overlay {
-            opacity: 1;
-        }
-        
-        .thumbnail-play-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: #333;
-        }
-        
-        .menu-card {
-            background: #4a90e2;
-            color: white;
-            border-radius: 12px;
-            padding: 0;
-            text-align: center;
-            position: relative;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .menu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        
-        .menu-card.monitors-1 { 
-            background: linear-gradient(135deg, #4a90e2, #357abd); 
-        }
-        .menu-card.monitors-2 { 
-            background: linear-gradient(135deg, #7b68ee, #6a4fd8); 
-        }
-        
-        .menu-name {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 10px;
-            word-break: break-word;
-        }
-        
-        .menu-info {
-            font-size: 12px;
-            opacity: 0.9;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        
-        .folder-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.3);
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 500;
-        }
-        
-        .play-icon {
-            font-size: 24px;
-            margin-top: 10px;
-        }
-        
-        .folder-section {
-            margin-bottom: 30px;
-        }
-        
-        .folder-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
-            padding: 10px 0;
-            border-bottom: 2px solid #eee;
-        }
-        
-        .loading {
-            text-align: center;
-            color: #666;
-            font-size: 18px;
-            padding: 60px;
-            background: white;
+            background: #f8f9fa;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4a90e2;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .error {
-            background: #ff6b6b;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 1000;
             display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .fullscreen.show { display: flex; }
-        
-        .fullscreen video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            padding: 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            width: 50px;
-            height: 50px;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="title">🍽️ Menu Display System</div>
-        <div class="controls" style="margin: 15px 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-            <button class="upload-btn" id="uploadBtn" onclick="triggerFileUpload()" disabled>📤 Replace Selected</button>
+        <div class="controls">
+            <button class="btn" id="uploadBtn" onclick="triggerFileUpload()" disabled>📤 Replace Selected</button>
             <input type="file" id="fileInput" accept=".mp4,.mov,.avi" style="display: none;" onchange="handleFileUpload(event)">
-            <button class="refresh-btn" onclick="loadMenus()">🔄 Refresh</button>
-            <button class="refresh-btn" onclick="toggleTokenInput()" style="background: #6c757d;">🔑 Token</button>
+            <button class="btn refresh" onclick="loadMenus()">🔄 Refresh</button>
         </div>
-        <div id="selectionInfo" style="text-align: center; margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; display: none;">
+        <div id="selectionInfo" class="selection-info">
             <span id="selectedFileName">No file selected</span>
             <button onclick="clearSelection()" style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px;">Clear</button>
-        </div>
-        <div id="tokenInput" style="display: none; margin: 10px 0;">
-            <input type="password" id="githubToken" placeholder="GitHub Token (for private repos)" style="padding: 8px; width: 300px; border: 1px solid #ddd; border-radius: 4px;">
-            <button onclick="saveToken()" style="padding: 8px 12px; margin-left: 5px; background: #28a745; color: white; border: none; border-radius: 4px;">Save</button>
         </div>
         <div class="status" id="status">Click on any video card to select it, then upload a replacement</div>
     </div>
@@ -500,103 +369,28 @@
                 <p id="uploadStatus">Preparing upload...</p>
             </div>
             <div id="uploadButtons">
-                <button class="upload-btn" onclick="startReplacement()">✅ Replace File</button>
-                <button class="refresh-btn" onclick="closeUploadModal()" style="background: #6c757d;">❌ Cancel</button>
+                <button class="btn" onclick="startReplacement()">✅ Replace File</button>
+                <button class="btn" onclick="closeUploadModal()" style="background: #6c757d;">❌ Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
-        // CHANGE THIS: Replace 'your-repo-name' with your actual repository name
         const username = 'meama24252525';
-        const repoName = '1-monitor-ones'; // ← Your repository name from the screenshot
+        const repoName = '1-monitor-ones';
         
         let menus1 = [];
         let menus2 = [];
         let selectedFiles = [];
-        let githubToken = localStorage.getItem('github-token') || '';
-        let selectedFile = null; // Track which file is selected for replacement
-
-        // File selection functions
-        function selectFile(filePath, fileName, folder) {
-            // Clear previous selection
-            document.querySelectorAll('.menu-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Select new file
-            const cardElement = document.getElementById(`card-${filePath}`);
-            if (cardElement) {
-                cardElement.classList.add('selected');
-            }
-            
-            selectedFile = {
-                path: filePath,
-                name: fileName,
-                folder: folder
-            };
-            
-            // Update UI
-            document.getElementById('selectedFileName').textContent = `Selected: ${fileName} (${folder})`;
-            document.getElementById('selectionInfo').style.display = 'block';
-            document.getElementById('uploadBtn').disabled = false;
-        }
-
-        function clearSelection() {
-            document.querySelectorAll('.menu-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            selectedFile = null;
-            document.getElementById('selectionInfo').style.display = 'none';
-            document.getElementById('uploadBtn').disabled = true;
-        }
-
-        function triggerFileUpload() {
-            if (!selectedFile) {
-                alert('Please select a file to replace first');
-                return;
-            }
-            document.getElementById('fileInput').click();
-        }
-
-        // Token management functions
-        function toggleTokenInput() {
-            const tokenDiv = document.getElementById('tokenInput');
-            tokenDiv.style.display = tokenDiv.style.display === 'none' ? 'block' : 'none';
-            if (tokenDiv.style.display === 'block') {
-                document.getElementById('githubToken').value = githubToken;
-            }
-        }
-
-        function saveToken() {
-            githubToken = document.getElementById('githubToken').value.trim();
-            localStorage.setItem('github-token', githubToken);
-            document.getElementById('tokenInput').style.display = 'none';
-            alert('Token saved! This will be used for uploads and deletes.');
-        }
-
-        function getHeaders() {
-            const headers = {
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-            };
-            if (githubToken) {
-                headers['Authorization'] = `token ${githubToken}`;
-            }
-            return headers;
-        }
+        let selectedFile = null;
 
         async function loadMenus(repo = repoName) {
+            clearSelection();
             
             document.getElementById('status').textContent = 'Scanning "1 monitors" and "2 monitors" folders...';
             document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Scanning for MP4 files...</div>';
             
             try {
-                // Clear any previous selection when refreshing
-                clearSelection();
-                
-                // Load menu files from both folders with correct names
                 menus1 = await loadMenusFromFolder('1 monitors', repo);
                 menus2 = await loadMenusFromFolder('2 monitors', repo);
                 
@@ -604,14 +398,6 @@
                 
                 const totalMenus = menus1.length + menus2.length;
                 document.getElementById('status').textContent = `Found ${totalMenus} MP4 files. Click any card to select, then upload a replacement.`;
-                
-                // Show debugging info in console
-                console.log('Final results:', {
-                    repo: repo,
-                    folder1: menus1.length + ' files in "1 monitors"',
-                    folder2: menus2.length + ' files in "2 monitors"',
-                    total: totalMenus
-                });
                 
             } catch (error) {
                 document.getElementById('content').innerHTML = `
@@ -628,24 +414,14 @@
         async function loadMenusFromFolder(folderName, repo) {
             try {
                 const url = `https://api.github.com/repos/${username}/${repo}/contents/${encodeURIComponent(folderName)}`;
-                console.log(`Checking folder: ${folderName} at ${url}`);
-                
-                const headers = {};
-                if (githubToken) {
-                    headers['Authorization'] = `token ${githubToken}`;
-                }
-                
-                const response = await fetch(url, { headers });
+                const response = await fetch(url);
                 
                 if (!response.ok) {
-                    console.log(`Folder "${folderName}" not found - Status: ${response.status}`);
                     return [];
                 }
                 
                 const contents = await response.json();
-                console.log(`Found ${contents.length} items in "${folderName}":`, contents.map(item => item.name));
                 
-                // Find ALL .mp4 files in the folder
                 const mp4Files = contents.filter(item => 
                     item.type === 'file' && 
                     item.name.toLowerCase().endsWith('.mp4')
@@ -654,14 +430,12 @@
                     path: item.path,
                     download_url: item.download_url,
                     size: item.size,
-                    sha: item.sha // Include SHA for deletion
+                    sha: item.sha
                 }));
                 
-                console.log(`MP4 files in "${folderName}":`, mp4Files.map(item => item.name));
                 return mp4Files;
                 
             } catch (error) {
-                console.log(`Error loading from "${folderName}":`, error);
                 return [];
             }
         }
@@ -747,34 +521,45 @@
             document.getElementById('content').innerHTML = html;
         }
 
-        function playMenu(videoUrl, menuName) {
-            const video = document.getElementById('fullscreenVideo');
-            video.src = videoUrl;
-            document.getElementById('fullscreen').classList.add('show');
-            video.play();
-        }
-
-        function closeVideo() {
-            document.getElementById('fullscreen').classList.remove('show');
-            document.getElementById('fullscreenVideo').pause();
-        }
-
-        // Auto-load when page opens
-        window.onload = function() {
-            // Automatically start loading menus
-            loadMenus();
-            clearSelection(); // Ensure no file is selected initially
-        }
-
-        // Close video with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeVideo();
-                closeUploadModal();
+        function selectFile(filePath, fileName, folder) {
+            document.querySelectorAll('.menu-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const cardElement = document.getElementById(`card-${filePath}`);
+            if (cardElement) {
+                cardElement.classList.add('selected');
             }
-        });
+            
+            selectedFile = {
+                path: filePath,
+                name: fileName,
+                folder: folder
+            };
+            
+            document.getElementById('selectedFileName').textContent = `Selected: ${fileName} (${folder})`;
+            document.getElementById('selectionInfo').style.display = 'block';
+            document.getElementById('uploadBtn').disabled = false;
+        }
 
-        // File Upload Functions
+        function clearSelection() {
+            document.querySelectorAll('.menu-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            selectedFile = null;
+            document.getElementById('selectionInfo').style.display = 'none';
+            document.getElementById('uploadBtn').disabled = true;
+        }
+
+        function triggerFileUpload() {
+            if (!selectedFile) {
+                alert('Please select a file to replace first');
+                return;
+            }
+            document.getElementById('fileInput').click();
+        }
+
         function handleFileUpload(event) {
             const files = Array.from(event.target.files);
             if (files.length === 0) return;
@@ -791,14 +576,11 @@
             
             const newFile = files[0];
             
-            // Update modal with replacement info
             document.getElementById('originalFileName').textContent = selectedFile.name;
             document.getElementById('originalLocation').textContent = selectedFile.folder;
             document.getElementById('newFileName').textContent = newFile.name;
             
             selectedFiles = [newFile];
-            
-            // Show upload modal
             document.getElementById('uploadOverlay').classList.add('show');
         }
 
@@ -829,17 +611,12 @@
                 statusText.textContent = `Replacing ${selectedFile.name} with ${newFile.name}...`;
                 progressBar.style.width = '20%';
                 
-                // Convert file to base64
                 const base64Content = await fileToBase64(newFile);
                 progressBar.style.width = '60%';
                 
-                // Get the current file info to get the SHA for replacement
-                statusText.textContent = 'Getting file information...';
                 const currentFileInfo = await getCurrentFileInfo(selectedFile.path);
                 progressBar.style.width = '80%';
                 
-                // Upload replacement file
-                statusText.textContent = 'Uploading replacement...';
                 await replaceFileOnGitHub(selectedFile.path, base64Content, newFile.name, currentFileInfo.sha);
                 progressBar.style.width = '100%';
                 
@@ -848,7 +625,7 @@
                 setTimeout(() => {
                     closeUploadModal();
                     clearSelection();
-                    loadMenus(); // Refresh the display
+                    loadMenus();
                 }, 2000);
                 
             } catch (error) {
@@ -859,16 +636,10 @@
 
         async function getCurrentFileInfo(filePath) {
             const url = `https://api.github.com/repos/${username}/${repoName}/contents/${filePath}`;
-            const headers = {};
-            if (githubToken) {
-                headers['Authorization'] = `token ${githubToken}`;
-            }
-            
-            const response = await fetch(url, { headers });
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Could not get file info: ${response.status}`);
             }
-            
             return await response.json();
         }
 
@@ -877,11 +648,14 @@
             
             const response = await fetch(url, {
                 method: 'PUT',
-                headers: getHeaders(),
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     message: `Replace ${filePath.split('/').pop()} with ${newFileName}`,
                     content: base64Content,
-                    sha: currentSha // Required for updating existing files
+                    sha: currentSha
                 })
             });
             
@@ -896,7 +670,6 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => {
-                    // Remove the data:video/mp4;base64, prefix
                     const base64 = reader.result.split(',')[1];
                     resolve(base64);
                 };
@@ -904,7 +677,6 @@
             });
         }
 
-        // File Delete Functions
         async function deleteFile(filePath, fileSha, fileName) {
             if (!confirm(`Are you sure you want to delete "${fileName}"?`)) {
                 return;
@@ -915,7 +687,10 @@
                 
                 const response = await fetch(url, {
                     method: 'DELETE',
-                    headers: getHeaders(),
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
                         message: `Delete ${fileName}`,
                         sha: fileSha
@@ -927,13 +702,36 @@
                     throw new Error(error.message || `Delete failed: ${response.status}`);
                 }
                 
-                // Refresh the display
                 loadMenus();
                 alert(`✅ Successfully deleted "${fileName}"`);
                 
             } catch (error) {
                 alert(`❌ Failed to delete "${fileName}": ${error.message}`);
             }
+        }
+
+        function playMenu(videoUrl, menuName) {
+            const video = document.getElementById('fullscreenVideo');
+            video.src = videoUrl;
+            document.getElementById('fullscreen').classList.add('show');
+            video.play();
+        }
+
+        function closeVideo() {
+            document.getElementById('fullscreen').classList.remove('show');
+            document.getElementById('fullscreenVideo').pause();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeVideo();
+                closeUploadModal();
+            }
+        });
+
+        window.onload = function() {
+            loadMenus();
+            clearSelection();
         }
     </script>
 </body>
