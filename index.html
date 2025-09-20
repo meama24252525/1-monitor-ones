@@ -408,12 +408,16 @@
         async function loadMenus(repo = repoName) {
             clearSelection();
             
-            document.getElementById('status').textContent = 'Scanning "1 monitors" and "2 monitors" folders...';
+            document.getElementById('status').textContent = 'Scanning "1 monitors", "2 monitors/menu1" and "2 monitors/menu2" folders...';
             document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Scanning for MP4 files...</div>';
             
             try {
                 menus1 = await loadMenusFromFolder('1 monitors', repo);
-                menus2 = await loadMenusFromFolder('2 monitors', repo);
+                
+                // For dual monitors, check both menu1 and menu2 subfolders
+                const menu2Folder1 = await loadMenusFromFolder('2 monitors/menu1', repo);
+                const menu2Folder2 = await loadMenusFromFolder('2 monitors/menu2', repo);
+                menus2 = [...menu2Folder1, ...menu2Folder2];
                 
                 displayMenus();
                 
@@ -425,7 +429,7 @@
                     <div class="error">
                         <h3>❌ Could not load menus</h3>
                         <p>${error.message}</p>
-                        <small>Make sure the repository "${repo}" exists and has "1 monitors" and "2 monitors" folders with .mp4 files</small>
+                        <small>Make sure the repository "${repo}" exists and has "1 monitors" and "2 monitors/menu1" & "2 monitors/menu2" folders with .mp4 files</small>
                     </div>
                 `;
                 document.getElementById('status').textContent = 'Error loading menu files';
@@ -501,10 +505,12 @@
                     <div class="folder-section">
                         <div class="folder-title">📺📺 Dual Monitor Menus (${menus2.length})</div>
                         <div class="grid">
-                            ${menus2.map((menu, index) => `
-                                <div class="menu-card monitors-2" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', '2 monitors')">
+                        ${menus2.map((menu, index) => {
+                            const folderName = menu.path.includes('/menu1/') ? 'menu1' : 'menu2';
+                            return `
+                                <div class="menu-card monitors-2" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', '2 monitors/${folderName}')">
                                     <button class="delete-btn" onclick="event.stopPropagation(); deleteFile('${menu.path}', '${menu.sha}', '${menu.name}')" title="Delete file">🗑️</button>
-                                    <div class="folder-badge">2 Monitors</div>
+                                    <div class="folder-badge">${folderName}</div>
                                     
                                     <div class="video-thumbnail">
                                         <video preload="metadata" muted>
@@ -522,7 +528,8 @@
                                     
                                     <div class="select-indicator">SELECTED</div>
                                 </div>
-                            `).join('')}
+                            `;
+                        }).join('')}
                         </div>
                     </div>
                 `;
@@ -533,7 +540,8 @@
                     <div class="loading">
                         <h3>📁 No .mp4 files found</h3>
                         <p>Looking for .mp4 files in folders:</p>
-                        <p>📂 "1 monitors" and 📂 "2 monitors"</p>
+                        <p>📂 "1 monitors"</p>
+                        <p>📂 "2 monitors/menu1" and "2 monitors/menu2"</p>
                         <p>Repository: ${repoName}</p>
                     </div>
                 `;
