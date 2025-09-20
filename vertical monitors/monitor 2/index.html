@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fullscreen Video Loop</title>
+<title>Fullscreen Vertical Video Loop</title>
 <style>
   html, body {
     margin: 0;
@@ -13,11 +13,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
   }
   video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 100%;      /* Fit the full height */
+    width: auto;       /* Adjust width to keep aspect ratio */
     background: #000;
   }
 </style>
@@ -56,5 +56,3 @@ window.addEventListener("load", () => {
 </video>
 </body>
 </html>
-
-
