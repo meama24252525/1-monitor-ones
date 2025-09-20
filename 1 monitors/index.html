@@ -17,7 +17,7 @@
   video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* fills screen, crops edges if needed */
+    object-fit: cover;
     background: #000;
   }
 </style>
@@ -37,15 +37,15 @@ window.addEventListener("load", () => {
   document.addEventListener("click", goFullscreen);
   document.addEventListener("touchstart", goFullscreen);
 
-  // Refresh page every video duration (so updates load)
-  setInterval(() => {
+  // Refresh page when video ends
+  video.addEventListener("ended", () => {
     location.reload();
-  }, video.duration * 1000 + 500); // slightly longer than video length
+  });
 });
 </script>
 </head>
 <body>
-<video autoplay muted loop>
+<video autoplay muted playsinline>
   <source src="https://raw.githubusercontent.com/meama24252525/1-monitor-ones/main/1%20monitors/menu.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
