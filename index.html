@@ -492,7 +492,7 @@
             if (menus1.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title">📺 Single Monitor Menus (${menus1.length})</div>
+                        <div class="folder-title"> Single Monitor Menus (${menus1.length})</div>
                         <div class="grid">
                             ${menus1.map((menu, index) => `
                                 <div class="menu-card monitors-1" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', '1 monitors')">
@@ -524,7 +524,7 @@
             if (menus2.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title">📺📺 Dual Monitor Menus (${menus2.length})</div>
+                        <div class="folder-title"> Dual Monitor Menus (${menus2.length})</div>
                         <div class="grid">
                         ${menus2.map((menu, index) => {
                             const folderName = menu.path.includes('/menu1/') ? 'menu1' : 'menu2';
@@ -559,7 +559,7 @@
             if (menusVertical.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title">📱 Vertical Monitor Menus (${menusVertical.length})</div>
+                        <div class="folder-title"> Vertical Monitor Menus (${menusVertical.length})</div>
                         <div class="grid">
                             ${menusVertical.map((menu, index) => {
                                 const monitorNum = menu.path.includes('/monitor 1/') ? 'monitor 1' : 'monitor 2';
