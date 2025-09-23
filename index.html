@@ -62,6 +62,17 @@
             margin-top: 8px;
         }
         
+        .file-size-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
@@ -373,6 +384,9 @@
             <a href="https://www.freeconvert.com/video-compressor" target="_blank" class="btn compress" title="Compress videos before uploading">🗜️ Compress Video</a>
             <button class="btn refresh" onclick="loadMenus()">🔄 Refresh</button>
         </div>
+        <div class="file-size-warning">
+            📏 <strong>Important:</strong> Please keep MP4 files under 10MB for optimal performance. Use the compress button above if needed.
+        </div>
         <div id="selectionInfo" class="selection-info">
             <span id="selectedFileName">No file selected</span>
             <button onclick="clearSelection()" style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px;">Clear</button>
@@ -393,6 +407,9 @@
     <div id="uploadOverlay" class="upload-overlay">
         <div class="upload-modal">
             <h3>📤 Replace Video File</h3>
+            <div style="background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; border-radius: 6px; margin: 15px 0; font-size: 13px;">
+                ⚠️ <strong>File Size Limit:</strong> Please ensure your MP4 file is under 10MB for optimal performance.
+            </div>
             <div id="replaceInfo" style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                 <p><strong>Replacing:</strong> <span id="originalFileName"></span></p>
                 <p><strong>Location:</strong> <span id="originalLocation"></span></p>
@@ -443,7 +460,7 @@
                 displayMenus();
                 
                 const totalMenus = menus1.length + menus2.length + menusVertical.length;
-                document.getElementById('status').textContent = `Found ${totalMenus} MP4 files. Click any card to select, then upload a replacement.`;
+                document.getElementById('status').textContent = `Found ${totalMenus} MP4 files. Click any card to select, then upload a replacement. Keep files under 10MB.`;
                 
             } catch (error) {
                 document.getElementById('content').innerHTML = `
@@ -492,7 +509,7 @@
             if (menus1.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title"> Single Monitor Menus (${menus1.length})</div>
+                        <div class="folder-title">📱 Single Monitor Menus (${menus1.length})</div>
                         <div class="grid">
                             ${menus1.map((menu, index) => `
                                 <div class="menu-card monitors-1" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', '1 monitors')">
@@ -524,7 +541,7 @@
             if (menus2.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title"> Dual Monitor Menus (${menus2.length})</div>
+                        <div class="folder-title">🖥️ Dual Monitor Menus (${menus2.length})</div>
                         <div class="grid">
                         ${menus2.map((menu, index) => {
                             const folderName = menu.path.includes('/menu1/') ? 'menu1' : 'menu2';
@@ -559,7 +576,7 @@
             if (menusVertical.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title"> Vertical Monitor Menus (${menusVertical.length})</div>
+                        <div class="folder-title">📺 Vertical Monitor Menus (${menusVertical.length})</div>
                         <div class="grid">
                             ${menusVertical.map((menu, index) => {
                                 const monitorNum = menu.path.includes('/monitor 1/') ? 'monitor 1' : 'monitor 2';
@@ -662,9 +679,16 @@
             
             const newFile = files[0];
             
+            // Check file size (10MB = 10 * 1024 * 1024 bytes)
+            const maxSize = 10 * 1024 * 1024;
+            if (newFile.size > maxSize) {
+                alert(`File size (${(newFile.size / (1024*1024)).toFixed(1)} MB) exceeds the 10MB limit. Please compress your video first using the compress button above.`);
+                return;
+            }
+            
             document.getElementById('originalFileName').textContent = selectedFile.name;
             document.getElementById('originalLocation').textContent = selectedFile.folder;
-            document.getElementById('newFileName').textContent = newFile.name;
+            document.getElementById('newFileName').textContent = `${newFile.name} (${(newFile.size / (1024*1024)).toFixed(1)} MB)`;
             
             selectedFiles = [newFile];
             document.getElementById('uploadOverlay').classList.add('show');
