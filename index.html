@@ -377,7 +377,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">🍽️ Menu Display System</div>
+        <div class="title"> Menu Display System</div>
         <div class="controls">
             <button class="btn" id="uploadBtn" onclick="triggerFileUpload()" disabled>📤 Replace Selected</button>
             <input type="file" id="fileInput" accept=".mp4,.mov,.avi" style="display: none;" onchange="handleFileUpload(event)">
@@ -385,7 +385,7 @@
             <button class="btn refresh" onclick="loadMenus()">🔄 Refresh</button>
         </div>
         <div class="file-size-warning">
-            📏 <strong>Important:</strong> Please keep MP4 files under 10MB for optimal performance. Use the compress button above if needed.
+             <strong>Important:</strong> Please keep MP4 files under 10MB for optimal performance. Use the compress button above if needed.
         </div>
         <div id="selectionInfo" class="selection-info">
             <span id="selectedFileName">No file selected</span>
@@ -509,7 +509,7 @@
             if (menus1.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title">📱 Single Monitor Menus (${menus1.length})</div>
+                        <div class="folder-title"> Single Monitor Menus (${menus1.length})</div>
                         <div class="grid">
                             ${menus1.map((menu, index) => `
                                 <div class="menu-card monitors-1" id="card-${menu.path}" onclick="selectFile('${menu.path}', '${menu.name}', '1 monitors')">
@@ -541,7 +541,7 @@
             if (menus2.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title">🖥️ Dual Monitor Menus (${menus2.length})</div>
+                        <div class="folder-title"> Dual Monitor Menus (${menus2.length})</div>
                         <div class="grid">
                         ${menus2.map((menu, index) => {
                             const folderName = menu.path.includes('/menu1/') ? 'menu1' : 'menu2';
@@ -576,7 +576,7 @@
             if (menusVertical.length > 0) {
                 html += `
                     <div class="folder-section">
-                        <div class="folder-title">📺 Vertical Monitor Menus (${menusVertical.length})</div>
+                        <div class="folder-title"> Vertical Monitor Menus (${menusVertical.length})</div>
                         <div class="grid">
                             ${menusVertical.map((menu, index) => {
                                 const monitorNum = menu.path.includes('/monitor 1/') ? 'monitor 1' : 'monitor 2';
