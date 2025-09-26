@@ -431,6 +431,7 @@
     <script>
         const username = 'meama24252525';
         const repoName = '1-monitor-ones';
+        const githubToken = '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';  // ⚠️ REPLACE THIS WITH YOUR GITHUB TOKEN
         
         let menus1 = [];
         let menus2 = [];
@@ -759,6 +760,7 @@
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
+                    'Authorization': `token ${githubToken}`,
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
@@ -798,6 +800,7 @@
                 const response = await fetch(url, {
                     method: 'DELETE',
                     headers: {
+                        'Authorization': `token ${githubToken}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     },
