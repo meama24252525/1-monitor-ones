@@ -110,6 +110,7 @@
             overflow: hidden;
         }
         
+        /* Vertical monitor thumbnails - portrait crop within same frame */
         .menu-card.monitors-vertical .video-thumbnail {
             display: flex;
             justify-content: center;
@@ -430,7 +431,6 @@
     <script>
         const username = 'meama24252525';
         const repoName = '1-monitor-ones';
-        const githubToken = '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';  // ⚠️ REPLACE WITH YOUR GITHUB TOKEN
         
         let menus1 = [];
         let menus2 = [];
@@ -447,10 +447,12 @@
             try {
                 menus1 = await loadMenusFromFolder('1 monitors', repo);
                 
+                // For dual monitors, check both menu1 and menu2 subfolders
                 const menu2Folder1 = await loadMenusFromFolder('2 monitors/menu1', repo);
                 const menu2Folder2 = await loadMenusFromFolder('2 monitors/menu2', repo);
                 menus2 = [...menu2Folder1, ...menu2Folder2];
                 
+                // For vertical monitors, check monitor 1 and monitor 2 subfolders
                 const verticalFolder1 = await loadMenusFromFolder('vertical monitors/monitor 1', repo);
                 const verticalFolder2 = await loadMenusFromFolder('vertical monitors/monitor 2', repo);
                 menusVertical = [...verticalFolder1, ...verticalFolder2];
@@ -461,7 +463,6 @@
                 document.getElementById('status').textContent = `Found ${totalMenus} MP4 files. Click any card to select, then upload a replacement. Keep files under 10MB.`;
                 
             } catch (error) {
-                console.error('Load menus error:', error);
                 document.getElementById('content').innerHTML = `
                     <div class="error">
                         <h3>❌ Could not load menus</h3>
@@ -476,16 +477,9 @@
         async function loadMenusFromFolder(folderName, repo) {
             try {
                 const url = `https://api.github.com/repos/${username}/${repo}/contents/${encodeURIComponent(folderName)}`;
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `token ${githubToken}`
-                    }
-                });
+                const response = await fetch(url);
                 
                 if (!response.ok) {
-                    console.error(`Failed to load ${folderName}: ${response.status} ${response.statusText}`);
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('Error details:', errorData);
                     return [];
                 }
                 
@@ -502,11 +496,9 @@
                     sha: item.sha
                 }));
                 
-                console.log(`Found ${mp4Files.length} MP4 files in ${folderName}`);
                 return mp4Files;
                 
             } catch (error) {
-                console.error(`Error loading ${folderName}:`, error);
                 return [];
             }
         }
@@ -687,6 +679,7 @@
             
             const newFile = files[0];
             
+            // Check file size (10MB = 10 * 1024 * 1024 bytes)
             const maxSize = 10 * 1024 * 1024;
             if (newFile.size > maxSize) {
                 alert(`File size (${(newFile.size / (1024*1024)).toFixed(1)} MB) exceeds the 10MB limit. Please compress your video first using the compress button above.`);
@@ -746,7 +739,6 @@
                 }, 2000);
                 
             } catch (error) {
-                console.error('Replacement error:', error);
                 alert(`Failed to replace file: ${error.message}`);
                 resetUploadProgress();
             }
@@ -754,11 +746,7 @@
 
         async function getCurrentFileInfo(filePath) {
             const url = `https://api.github.com/repos/${username}/${repoName}/contents/${filePath}`;
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${githubToken}`
-                }
-            });
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Could not get file info: ${response.status}`);
             }
@@ -771,7 +759,6 @@
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `token ${githubToken}`,
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
@@ -811,7 +798,6 @@
                 const response = await fetch(url, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': `token ${githubToken}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     },
@@ -830,7 +816,6 @@
                 alert(`✅ Successfully deleted "${fileName}"`);
                 
             } catch (error) {
-                console.error('Delete error:', error);
                 alert(`❌ Failed to delete "${fileName}": ${error.message}`);
             }
         }
