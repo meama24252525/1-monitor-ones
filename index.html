@@ -431,7 +431,7 @@
     <script>
         const username = 'meama24252525';
         const repoName = '1-monitor-ones';
-        const githubToken = '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';  // ⚠️ REPLACE THIS WITH YOUR GITHUB TOKEN
+        const githubToken = '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';  // ⚠️ REPLACE THIS WITH YOUR GITHUB TOKEN
         
         let menus1 = [];
         let menus2 = [];
@@ -485,6 +485,9 @@
                 });
                 
                 if (!response.ok) {
+                    console.error(`Failed to load ${folderName}: ${response.status} ${response.statusText}`);
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('Error details:', errorData);
                     return [];
                 }
                 
@@ -501,9 +504,11 @@
                     sha: item.sha
                 }));
                 
+                console.log(`Found ${mp4Files.length} MP4 files in ${folderName}`);
                 return mp4Files;
                 
             } catch (error) {
+                console.error(`Error loading ${folderName}:`, error);
                 return [];
             }
         }
