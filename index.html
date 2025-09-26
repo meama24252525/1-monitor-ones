@@ -431,7 +431,7 @@
     <script>
         const username = 'meama24252525';
         const repoName = '1-monitor-ones';
-        const githubToken = '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';  // ⚠️ REPLACE THIS WITH YOUR GITHUB TOKEN
+        const githubToken = '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';  // ⚠️ REPLACE THIS WITH YOUR GITHUB TOKEN
         
         let menus1 = [];
         let menus2 = [];
@@ -478,7 +478,11 @@
         async function loadMenusFromFolder(folderName, repo) {
             try {
                 const url = `https://api.github.com/repos/${username}/${repo}/contents/${encodeURIComponent(folderName)}`;
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`
+                    }
+                });
                 
                 if (!response.ok) {
                     return [];
@@ -747,7 +751,11 @@
 
         async function getCurrentFileInfo(filePath) {
             const url = `https://api.github.com/repos/${username}/${repoName}/contents/${filePath}`;
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            });
             if (!response.ok) {
                 throw new Error(`Could not get file info: ${response.status}`);
             }
