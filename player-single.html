@@ -5,7 +5,7 @@
 <title>Single Monitor Display</title>
 <style>
 body { margin: 0; background: #000; overflow: hidden; }
-video { width: 100vw; height: 100vh; object-fit: cover; }
+video { width: 100vw; height: 100vh; object-fit: contain; }
 </style>
 </head>
 <body>
@@ -15,7 +15,6 @@ video { width: 100vw; height: 100vh; object-fit: cover; }
 <script>
 const vid = document.getElementById('vid');
 vid.play();
-// Auto-refresh every 5 minutes to check for new video
 setTimeout(() => location.reload(), 300000);
 </script>
 </body>
