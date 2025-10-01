@@ -95,7 +95,7 @@ class MenuManager {
 
     createMenuCard(menu, type) {
         return `
-            <div class="menu-card" id="card-${menu.path}" onclick="menuManager.selectFile('${menu.path}', '${menu.name}', '${type}')">
+            <div class="menu-card ${type}" id="card-${menu.path}" onclick="menuManager.selectFile('${menu.path}', '${menu.name}', '${type}')">
                 <div class="video-thumbnail">
                     <video preload="metadata" muted>
                         <source src="${menu.download_url}#t=1" type="video/mp4">
