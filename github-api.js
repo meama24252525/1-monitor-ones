@@ -1,7 +1,7 @@
 import { CONFIG } from './config.js';
 
 // ADD YOUR GITHUB TOKEN HERE
-const GITHUB_TOKEN = 'ghp_YOUR_TOKEN_HERE'; // Replace with your actual token
+const GITHUB_TOKEN = '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'; // Replace with your actual token
 
 export async function loadMenusFromFolder(folderName) {
     try {
@@ -98,4 +98,5 @@ export function fileToBase64(file) {
         };
         reader.onerror = error => reject(error);
     });
+
 }
