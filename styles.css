@@ -158,6 +158,12 @@ body {
     object-fit: cover;
 }
 
+/* Vertical videos should fit in frame without cropping */
+.menu-card.vertical .video-thumbnail video {
+    object-fit: contain;
+    background: #000;
+}
+
 .video-content {
     padding: 12px;
 }
