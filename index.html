@@ -9,6 +9,12 @@
 <body>
     <div class="header">
         <h1>Menu Display System</h1>
+        
+        <div class="file-size-warning">
+            <strong>Important:</strong> Video files must be under 10MB. Files larger than 10MB will be rejected.
+            <a href="https://www.freeconvert.com/video-compressor" target="_blank" class="compress-link">Compress Videos Here</a>
+        </div>
+        
         <div class="controls">
             <button class="btn" id="uploadBtn" disabled>Replace Selected</button>
             <input type="file" id="fileInput" accept=".mp4,.mov,.avi" style="display: none;">
@@ -34,6 +40,9 @@
     <div id="uploadOverlay" class="upload-overlay">
         <div class="upload-modal">
             <h3>Replace Video File</h3>
+            <div class="upload-warning">
+                File size limit: 10MB maximum
+            </div>
             <div id="replaceInfo"></div>
             <div id="uploadProgress" style="display: none;">
                 <div class="progress-bar">
