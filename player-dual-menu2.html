@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dual Monitor - Menu 2</title>
+<style>
+body { margin: 0; background: #000; overflow: hidden; }
+video { width: 100vw; height: 100vh; object-fit: cover; }
+</style>
+</head>
+<body>
+<video id="vid" autoplay muted loop playsinline>
+  <source src="https://meama24252525.github.io/1-monitor-ones/2%20monitors/menu2/menu2.mp4" type="video/mp4">
+</video>
+<script>
+const vid = document.getElementById('vid');
+vid.play();
+setTimeout(() => location.reload(), 300000);
+</script>
+</body>
+</html>
