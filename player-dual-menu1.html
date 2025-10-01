@@ -15,6 +15,15 @@ video { width: 100vw; height: 100vh; object-fit: contain; }
 <script>
 const vid = document.getElementById('vid');
 vid.play();
+
+// Request fullscreen
+setTimeout(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen failed:', err);
+    });
+}, 1000);
+
+// Auto-reload every 5 minutes
 setTimeout(() => location.reload(), 300000);
 </script>
 </body>
