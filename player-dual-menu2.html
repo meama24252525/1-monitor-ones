@@ -16,12 +16,10 @@ video { width: 100vw; height: 100vh; object-fit: contain; }
 const vid = document.getElementById('vid');
 vid.play();
 
-// Request fullscreen
 setTimeout(() => {
     document.documentElement.requestFullscreen().catch(err => {});
 }, 1000);
 
-// Fast video change detection
 let lastCheck = '';
 
 async function checkForUpdates() {
@@ -37,7 +35,7 @@ async function checkForUpdates() {
         
         if (lastCheck && fileInfo !== lastCheck) {
             console.log('Video changed, reloading...');
-            location.reload(true); // Force reload from server
+            location.reload(true);
         }
         lastCheck = fileInfo;
     } catch (err) {
@@ -45,6 +43,8 @@ async function checkForUpdates() {
     }
 }
 
-// Check every 10 seconds
 setInterval(checkForUpdates, 10000);
 checkForUpdates();
+</script>
+</body>
+</html>
