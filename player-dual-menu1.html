@@ -18,13 +18,33 @@ vid.play();
 
 // Request fullscreen
 setTimeout(() => {
-    document.documentElement.requestFullscreen().catch(err => {
-        console.log('Fullscreen failed:', err);
-    });
+    document.documentElement.requestFullscreen().catch(err => {});
 }, 1000);
 
-// Auto-reload every 5 minutes
-setTimeout(() => location.reload(), 300000);
-</script>
-</body>
-</html>
+// Fast video change detection
+let lastCheck = '';
+
+async function checkForUpdates() {
+    try {
+        const url = vid.querySelector('source').src;
+        const response = await fetch(url + '?check=' + Date.now(), { 
+            method: 'HEAD',
+            cache: 'no-cache',
+            headers: { 'Cache-Control': 'no-cache' }
+        });
+        
+        const fileInfo = response.headers.get('Last-Modified') + response.headers.get('Content-Length');
+        
+        if (lastCheck && fileInfo !== lastCheck) {
+            console.log('Video changed, reloading...');
+            location.reload(true); // Force reload from server
+        }
+        lastCheck = fileInfo;
+    } catch (err) {
+        console.log('Check failed:', err);
+    }
+}
+
+// Check every 10 seconds
+setInterval(checkForUpdates, 10000);
+checkForUpdates();
