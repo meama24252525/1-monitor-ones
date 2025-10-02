@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Single Monitor Display</title>
+<style>
+body { margin: 0; background: #000; overflow: hidden; }
+video { width: 100vw; height: 100vh; object-fit: contain; }
+</style>
+</head>
+<body>
+<video id="vid" autoplay muted loop playsinline>
+  <source src="https://meama24252525.github.io/1-monitor-ones/1%20monitors/menu.mp4" type="video/mp4">
+</video>
+<script>
+const vid = document.getElementById('vid');
+vid.play();
+
+setTimeout(() => {
+    document.documentElement.requestFullscreen().catch(err => {});
+}, 1000);
+
+let lastCheck = '';
+
+async function checkForUpdates() {
+    try {
+        const url = vid.querySelector('source').src;
+        const response = await fetch(url + '?check=' + Date.now(), { 
+            method: 'HEAD',
+            cache: 'no-cache',
+            headers: { 'Cache-Control': 'no-cache' }
+        });
+        
+        const fileInfo = response.headers.get('Last-Modified') + response.headers.get('Content-Length');
+        
+        if (lastCheck && fileInfo !== lastCheck) {
+            console.log('Video changed, reloading...');
+            location.reload(true);
+        }
+        lastCheck = fileInfo;
+    } catch (err) {
+        console.log('Check failed:', err);
+    }
+}
+
+setInterval(checkForUpdates, 10000);
+checkForUpdates();
+</script>
+</body>
+</html>
