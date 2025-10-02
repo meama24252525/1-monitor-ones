@@ -23,7 +23,6 @@ class MenuManager {
         document.getElementById('uploadBtn').addEventListener('click', () => this.triggerFileUpload());
         document.getElementById('fileInput').addEventListener('change', (e) => this.handleFileUpload(e));
         document.getElementById('refreshBtn').addEventListener('click', () => this.loadAllMenus());
-        document.getElementById('clearBtn').addEventListener('click', () => this.clearSelection());
         document.getElementById('closeVideoBtn').addEventListener('click', () => this.videoPlayer.close());
         document.getElementById('confirmReplaceBtn').addEventListener('click', () => this.startReplacement());
         document.getElementById('cancelUploadBtn').addEventListener('click', () => this.closeUploadModal());
@@ -110,6 +109,7 @@ class MenuManager {
     }
 
     selectFile(filePath, fileName, folder) {
+        // Automatically unselect previous selection
         document.querySelectorAll('.menu-card').forEach(card => {
             card.classList.remove('selected');
         });
