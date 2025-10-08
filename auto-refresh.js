@@ -1,47 +1,45 @@
-// auto-refresh.js
+// auto-refresh.js (debug version)
 (async () => {
     const vid = document.getElementById('vid');
-    if (!vid) return;
+    if (!vid) {
+        console.warn('No video element found.');
+        return;
+    }
 
     try { vid.play(); } catch {}
     setTimeout(() => {
         document.documentElement.requestFullscreen().catch(() => {});
     }, 1000);
 
-    // === CONFIG ===
-    // Convert GitHub Pages URL to GitHub API URL
     const videoUrl = vid.querySelector('source').src;
     const apiPath = videoUrl
         .replace('https://meama24252525.github.io/', '')
-        .replace(/^1-monitor-ones\//, '') // remove the repo root from the path
-        .replace(/%20/g, ' '); // decode spaces for GitHub API
-
+        .replace(/^1-monitor-ones\//, '')
+        .replace(/%20/g, ' ');
     const githubApiUrl = `https://api.github.com/repos/meama24252525/1-monitor-ones/contents/${apiPath}`;
+
+    console.log('Checking for updates on:', githubApiUrl);
     let lastSha = null;
 
-    // === CHECK FUNCTION ===
     async function checkForUpdates() {
         try {
             const response = await fetch(githubApiUrl + '?t=' + Date.now(), {
                 cache: 'no-cache',
                 headers: { 'Accept': 'application/vnd.github.v3+json' }
             });
-
-            if (!response.ok) {
-                console.warn('GitHub API error:', response.status);
-                return;
-            }
+            console.log('GitHub response status:', response.status);
+            if (!response.ok) return;
 
             const data = await response.json();
-            const currentSha = data.sha;
+            console.log('Current SHA:', data.sha);
 
-            if (lastSha && currentSha !== lastSha) {
-                console.log('Video updated on GitHub, refreshing...');
+            if (lastSha && data.sha !== lastSha) {
+                console.log('Video updated on GitHub — refreshing page...');
                 location.reload(true);
             }
-            lastSha = currentSha;
+            lastSha = data.sha;
         } catch (err) {
-            console.warn('Update check failed:', err);
+            console.error('Update check failed:', err);
         }
     }
 
