@@ -1,47 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vertical Monitor 1</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-      background: black;
-    }
-    video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: contain;
-      transform: rotate(90deg);
-      transform-origin: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertical Monitor 1</title>
+<style>
+  html, body { margin:0; height:100%; overflow:hidden; background:black; }
+  video { width:100vw; height:100vh; object-fit:contain; transform:rotate(90deg); transform-origin:center; }
+</style>
 </head>
 <body>
-  <video id="vid" autoplay loop muted playsinline>
-    <source src="https://meama24252525.github.io/1-monitor-ones/vertical%20monitors/monitor%201/menu1.mp4" type="video/mp4">
-  </video>
-  <script>
-    const vid = document.getElementById("vid");
-    vid.play().catch(() => {});
-    setTimeout(() => { document.documentElement.requestFullscreen().catch(() => {}); }, 1000);
+<video id="vid" autoplay loop muted playsinline>
+  <source src="https://meama24252525.github.io/1-monitor-ones/vertical%20monitors/monitor%201/menu1.mp4" type="video/mp4">
+</video>
+<script>
+const vid = document.getElementById("vid");
+vid.play().catch(()=>{});
+setTimeout(()=>{ document.documentElement.requestFullscreen().catch(()=>{}); },1000);
 
-    let lastETag = null;
-    const videoURL = vid.querySelector('source').src;
+const videoBase = "https://meama24252525.github.io/1-monitor-ones/vertical%20monitors/monitor%201/menu1.mp4";
 
-    async function checkVideoUpdate() {
-      try {
-        const res = await fetch(videoURL, { method: 'HEAD', cache: 'no-store' });
-        const etag = res.headers.get('ETag');
-        if (lastETag && etag && etag !== lastETag) location.reload();
-        lastETag = etag;
-      } catch {}
+async function checkUpdate() {
+  try {
+    const timestamp = new Date().getTime();
+    const newSrc = videoBase + "?v=" + timestamp;
+    if (vid.src !== newSrc) {
+      vid.src = newSrc;
+      vid.load();
+      vid.play();
+      console.log("Video refreshed:", newSrc);
     }
+  } catch(e){ console.warn(e); }
+}
 
-    setInterval(checkVideoUpdate, 10000);
-  </script>
+setInterval(checkUpdate, 5000);
+</script>
 </body>
 </html>
