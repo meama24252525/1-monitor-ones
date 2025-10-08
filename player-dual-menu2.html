@@ -19,20 +19,27 @@
   </style>
 </head>
 <body>
-  <video id="vid" autoplay muted playsinline>
+  <video id="vid" autoplay loop muted playsinline>
     <source src="https://meama24252525.github.io/1-monitor-ones/2%20monitors/menu2/menu2.mp4" type="video/mp4">
   </video>
   <script>
     const vid = document.getElementById("vid");
     vid.play().catch(() => {});
-    setTimeout(() => {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }, 1000);
+    setTimeout(() => { document.documentElement.requestFullscreen().catch(() => {}); }, 1000);
 
-    vid.addEventListener("ended", () => {
-      console.log("Video ended — refreshing to check for update...");
-      location.reload(true);
-    });
+    let lastETag = null;
+    const videoURL = vid.querySelector('source').src;
+
+    async function checkVideoUpdate() {
+      try {
+        const res = await fetch(videoURL, { method: 'HEAD', cache: 'no-store' });
+        const etag = res.headers.get('ETag');
+        if (lastETag && etag && etag !== lastETag) location.reload();
+        lastETag = etag;
+      } catch {}
+    }
+
+    setInterval(checkVideoUpdate, 10000);
   </script>
 </body>
 </html>
