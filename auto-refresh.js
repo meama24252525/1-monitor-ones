@@ -9,18 +9,29 @@
     }, 1000);
 
     // === CONFIG ===
-    const githubFile = vid.querySelector('source').src
-        .replace('https://meama24252525.github.io/', 'https://api.github.com/repos/meama24252525/1-monitor-ones/contents/');
+    // Convert GitHub Pages URL to GitHub API URL
+    const videoUrl = vid.querySelector('source').src;
+    const apiPath = videoUrl
+        .replace('https://meama24252525.github.io/', '')
+        .replace(/^1-monitor-ones\//, '') // remove the repo root from the path
+        .replace(/%20/g, ' '); // decode spaces for GitHub API
+
+    const githubApiUrl = `https://api.github.com/repos/meama24252525/1-monitor-ones/contents/${apiPath}`;
     let lastSha = null;
 
     // === CHECK FUNCTION ===
     async function checkForUpdates() {
         try {
-            const response = await fetch(githubFile + '?t=' + Date.now(), {
+            const response = await fetch(githubApiUrl + '?t=' + Date.now(), {
                 cache: 'no-cache',
                 headers: { 'Accept': 'application/vnd.github.v3+json' }
             });
-            if (!response.ok) throw new Error('GitHub API error ' + response.status);
+
+            if (!response.ok) {
+                console.warn('GitHub API error:', response.status);
+                return;
+            }
+
             const data = await response.json();
             const currentSha = data.sha;
 
