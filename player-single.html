@@ -1,50 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Single Monitor Display</title>
-<style>
-body { margin: 0; background: #000; overflow: hidden; }
-video { width: 100vw; height: 100vh; object-fit: contain; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Single</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
 </head>
 <body>
-<video id="vid" autoplay muted loop playsinline>
-  <source src="https://meama24252525.github.io/1-monitor-ones/1%20monitors/menu.mp4" type="video/mp4">
-</video>
-<script>
-const vid = document.getElementById('vid');
-vid.play();
+  <video id="player" autoplay muted playsinline>
+    <source src="videos/player-single.mp4" type="video/mp4">
+  </video>
 
-setTimeout(() => {
-    document.documentElement.requestFullscreen().catch(err => {});
-}, 1000);
-
-let lastCheck = '';
-
-async function checkForUpdates() {
-    try {
-        const url = vid.querySelector('source').src;
-        const response = await fetch(url + '?check=' + Date.now(), { 
-            method: 'HEAD',
-            cache: 'no-cache',
-            headers: { 'Cache-Control': 'no-cache' }
-        });
-        
-        const fileInfo = response.headers.get('Last-Modified') + response.headers.get('Content-Length');
-        
-        if (lastCheck && fileInfo !== lastCheck) {
-            console.log('Video changed, reloading...');
-            location.reload(true);
-        }
-        lastCheck = fileInfo;
-    } catch (err) {
-        console.log('Check failed:', err);
-    }
-}
-
-setInterval(checkForUpdates, 10000);
-checkForUpdates();
-<script src="https://meama24252525.github.io/1-monitor-ones/auto-refresh.js"></script>
+  <script>
+    const player = document.getElementById('player');
+    player.addEventListener('ended', () => {
+      setTimeout(() => location.reload(true), 500);
+    });
+  </script>
 </body>
 </html>
